@@ -9,13 +9,15 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@prisma/client": "^7.3.0",
+    "@auth/prisma-adapter": "^2.11.1",
+    "@prisma/client": "^5.22.0",
     "bcryptjs": "^3.0.3",
     "next": "16.1.5",
     "next-auth": "^4.24.13",
-    "prisma": "^7.3.0",
+    "prisma": "^5.22.0",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "sass": "^1.97.3"
   },
   "devDependencies": {
     "@types/bcryptjs": "^3.0.0",
