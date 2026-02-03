@@ -1,11 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
 
-export default function LoginPage() {
+function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -23,7 +23,10 @@ export default function LoginPage() {
         username,
         password,
         redirect: false,
+        callbackUrl: "/dashboard/tasks",
       });
+
+      console.log("SignIn result:", result);
 
       if (result?.error) {
         setError("Invalid username or password");
@@ -31,8 +34,14 @@ export default function LoginPage() {
         return;
       }
 
-      window.location.href = "/dashboard/tasks";
-    } catch {
+      if (result?.ok) {
+        window.location.href = "/dashboard/tasks";
+      } else {
+        setError("Login failed. Please try again.");
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error("Login error:", err);
       setError("Something went wrong");
       setLoading(false);
     }
@@ -57,6 +66,7 @@ export default function LoginPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
+              autoComplete="username"
             />
           </div>
 
@@ -67,6 +77,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="current-password"
             />
           </div>
 
@@ -76,6 +87,7 @@ export default function LoginPage() {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+
         <p className="login-footer">
           Don&apos;t have an account?{" "}
           <Link href="/register">Register here</Link>
@@ -83,4 +95,8 @@ export default function LoginPage() {
       </div>
     </div>
   );
+}
+
+export default function LoginPage() {
+  return <LoginForm />;
 }
