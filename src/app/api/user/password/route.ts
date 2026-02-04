@@ -21,9 +21,9 @@ export async function PATCH(req: Request) {
       );
     }
 
-    if (newPassword.length < 6) {
+    if (newPassword.length < 4) {
       return NextResponse.json(
-        { error: "New password must be at least 6 characters" },
+        { error: "New password must be at least 4 characters" },
         { status: 400 },
       );
     }
