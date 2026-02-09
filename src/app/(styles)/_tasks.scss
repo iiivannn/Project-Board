@@ -1,8 +1,12 @@
 .tasks-page {
   h1 {
     margin-bottom: 30px;
-    font-size: 32px;
-    color: #333;
+    font-size: 28px;
+    color: var(--text-primary);
+
+    @media (min-width: 768px) {
+      font-size: 32px;
+    }
   }
 }
 
@@ -10,51 +14,58 @@
   text-align: center;
   padding: 40px;
   font-size: 18px;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .columns-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1fr;
   gap: 20px;
 
-  @media (max-width: 1400px) {
+  // Tablet - 2 columns
+  @media (min-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+  // Desktop - 4 columns
+  @media (min-width: 1400px) {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
 .column {
-  background: white;
+  background: var(--card-bg);
+  border: 1px solid var(--border-primary);
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px var(--card-shadow);
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 150px);
+  max-height: 500px;
+
+  @media (min-width: 768px) {
+    max-height: calc(100vh - 150px);
+  }
 
   .column-header {
     padding: 20px;
-    border-bottom: 2px solid #f0f0f0;
+    border-bottom: 2px solid var(--border-primary);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #fafafa;
+    background-color: var(--bg-tertiary);
     border-radius: 8px 8px 0 0;
 
     h2 {
       font-size: 18px;
       font-weight: 600;
-      color: #333;
+      color: var(--text-primary);
       margin: 0;
     }
 
     .add-button {
       padding: 8px 16px;
-      background-color: #0070f3;
-      color: white;
+      background-color: var(--btn-primary-bg);
+      color: var(--btn-primary-text);
       border: none;
       border-radius: 4px;
       cursor: pointer;
@@ -63,11 +74,12 @@
       transition: background-color 0.3s;
 
       &:hover:not(:disabled) {
-        background-color: #0051cc;
+        background-color: var(--btn-primary-hover);
       }
 
       &:disabled {
-        background-color: #ccc;
+        background-color: var(--btn-disabled-bg);
+        color: var(--btn-disabled-text);
         cursor: not-allowed;
       }
     }
@@ -80,114 +92,72 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
-
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: #f1f1f1;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: #888;
-      border-radius: 3px;
-
-      &:hover {
-        background: #555;
-      }
-    }
   }
 }
 
+.empty-column {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-disabled);
+  font-size: 14px;
+}
+
 .project-card {
-  background: #fff;
-  border: 1px solid #e0e0e0;
+  background: var(--card-bg);
+  border: 1px solid var(--border-primary);
   border-radius: 6px;
   padding: 15px;
-  transition:
-    box-shadow 0.3s,
-    transform 0.2s;
+  transition: all 0.3s;
+  cursor: pointer;
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px var(--card-shadow);
     transform: translateY(-2px);
+    border-color: var(--border-focus);
   }
 
   h3 {
     font-size: 16px;
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 8px;
   }
 
   p {
     font-size: 14px;
-    color: #666;
-    margin-bottom: 15px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
     line-height: 1.5;
   }
 
-  .reward-badge {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-size: 14px;
-    margin-bottom: 10px;
+  .log-count {
+    display: inline-block;
+    font-size: 12px;
+    color: var(--info-text);
+    background-color: var(--info-bg);
+    padding: 4px 8px;
+    border-radius: 12px;
     font-weight: 500;
   }
 
-  .card-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-
-    button {
-      padding: 8px 12px;
-      background-color: #f0f0f0;
-      color: #333;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
-      transition: all 0.3s;
-      flex: 1;
-      min-width: fit-content;
-
-      &:hover {
-        background-color: #e0e0e0;
-      }
-
-      &.delete-btn {
-        background-color: #ffebee;
-        color: #d32f2f;
-
-        &:hover {
-          background-color: #ffcdd2;
-        }
-      }
-
-      &.reward-btn {
-        background-color: #e3f2fd;
-        color: #1976d2;
-
-        &:hover {
-          background-color: #bbdefb;
-        }
-      }
-    }
+  .reward-badge {
+    display: inline-block;
+    background-color: var(--reward-bg);
+    color: var(--reward-text);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 8px;
   }
 
   &.complete {
-    border-color: #4caf50;
-    background-color: #f1f8f4;
+    border-color: var(--card-complete-border);
+    background-color: var(--card-complete-bg);
   }
 
   &.obsolete {
-    opacity: 0.6;
-    background-color: #fafafa;
+    opacity: var(--card-obsolete-opacity);
   }
 }
 
@@ -198,26 +168,29 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--modal-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 20px;
+  overflow-y: auto;
 }
 
 .modal {
-  background: white;
+  background: var(--card-bg);
   border-radius: 8px;
   padding: 30px;
   max-width: 500px;
   width: 100%;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 40px var(--card-shadow);
+  max-height: 90vh;
+  overflow-y: auto;
 
   h2 {
     margin-bottom: 20px;
     font-size: 22px;
-    color: #333;
+    color: var(--text-primary);
   }
 
   .form-group {
@@ -226,30 +199,37 @@
     label {
       display: block;
       margin-bottom: 8px;
-      color: #555;
+      color: var(--text-secondary);
       font-weight: 500;
       font-size: 14px;
     }
 
     input,
-    textarea {
+    textarea,
+    select {
       width: 100%;
       padding: 12px;
-      border: 1px solid #ddd;
+      border: 1px solid var(--border-secondary);
       border-radius: 4px;
       font-size: 14px;
       font-family: inherit;
       transition: border-color 0.3s;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
 
       &:focus {
         outline: none;
-        border-color: #0070f3;
+        border-color: var(--border-focus);
       }
     }
 
     textarea {
       resize: vertical;
       min-height: 100px;
+    }
+
+    select {
+      cursor: pointer;
     }
   }
 
@@ -269,22 +249,427 @@
       transition: all 0.3s;
 
       &[type="button"] {
-        background-color: #f0f0f0;
-        color: #333;
+        background-color: var(--btn-secondary-bg);
+        color: var(--btn-secondary-text);
 
         &:hover {
-          background-color: #e0e0e0;
+          background-color: var(--btn-secondary-hover);
         }
       }
 
       &[type="submit"] {
-        background-color: #0070f3;
-        color: white;
+        background-color: var(--btn-primary-bg);
+        color: var(--btn-primary-text);
 
         &:hover {
-          background-color: #0051cc;
+          background-color: var(--btn-primary-hover);
         }
       }
     }
+  }
+}
+
+// Large Modal for Project Details
+.modal-large {
+  max-width: 800px;
+  padding: 0;
+
+  .modal-header {
+    padding: 30px;
+    border-bottom: 1px solid var(--border-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    h2 {
+      margin-bottom: 8px;
+    }
+
+    .project-description {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .close-button {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.3s;
+
+      &:hover {
+        background-color: var(--bg-hover);
+        color: var(--text-primary);
+      }
+    }
+  }
+
+  .modal-body {
+    padding: 30px;
+    max-height: calc(90vh - 120px);
+    overflow-y: auto;
+  }
+}
+
+// Project Info Section
+.project-info {
+  background-color: var(--bg-tertiary);
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 25px;
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 14px;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--border-primary);
+    }
+
+    strong {
+      color: var(--text-secondary);
+    }
+
+    span {
+      color: var(--text-primary);
+    }
+
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: capitalize;
+
+      &.status-todo {
+        background-color: var(--warning-bg);
+        color: var(--warning-text);
+      }
+
+      &.status-in-progress {
+        background-color: var(--info-bg);
+        color: var(--info-text);
+      }
+
+      &.status-complete {
+        background-color: var(--success-bg);
+        color: var(--success-text);
+      }
+
+      &.status-obsolete {
+        background-color: var(--btn-secondary-bg);
+        color: var(--text-disabled);
+      }
+    }
+  }
+}
+
+// Modal Sections
+.section {
+  margin-bottom: 30px;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-primary);
+  }
+
+  .inline-form {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+
+    input,
+    textarea {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid var(--border-secondary);
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: inherit;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+
+      &:focus {
+        outline: none;
+        border-color: var(--border-focus);
+      }
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    button {
+      padding: 10px 20px;
+      white-space: nowrap;
+    }
+  }
+
+  .disabled-text {
+    color: var(--text-disabled);
+    font-size: 14px;
+    font-style: italic;
+  }
+
+  .empty-text {
+    color: var(--text-secondary);
+    font-size: 14px;
+    text-align: center;
+    padding: 20px;
+  }
+}
+
+// Reward Display
+.reward-display {
+  background-color: var(--reward-bg);
+  border: 1px solid var(--reward-text);
+  border-radius: 6px;
+  padding: 15px;
+
+  .reward-content {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+
+    .reward-icon {
+      font-size: 24px;
+    }
+
+    p {
+      color: var(--reward-text);
+      font-weight: 500;
+      margin: 0 0 4px 0;
+    }
+
+    small {
+      color: var(--reward-text);
+      opacity: 0.8;
+      font-size: 12px;
+    }
+  }
+
+  .btn-edit-reward {
+    width: 100%;
+    padding: 8px 16px;
+    background-color: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s;
+
+    &:hover {
+      background-color: var(--btn-primary-hover);
+    }
+  }
+}
+
+// Add this for modal info text
+.modal-info {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+
+  strong {
+    color: var(--text-primary);
+  }
+}
+
+// Add this for error messages in modals
+.error-message {
+  color: var(--error-text);
+  background-color: var(--error-bg);
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  border: 1px solid var(--error-border);
+}
+
+// Logs Table
+.logs-table {
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  overflow: hidden;
+
+  .log-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 15px;
+    border-bottom: 1px solid var(--border-primary);
+    transition: background-color 0.2s;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background-color: var(--bg-hover);
+    }
+
+    .log-content {
+      flex: 1;
+      margin-right: 15px;
+
+      p {
+        margin: 0 0 6px 0;
+        color: var(--text-primary);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      small {
+        color: var(--text-secondary);
+        font-size: 12px;
+      }
+
+      textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid var(--border-secondary);
+        border-radius: 4px;
+        font-size: 14px;
+        font-family: inherit;
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        margin-bottom: 6px;
+
+        &:focus {
+          outline: none;
+          border-color: var(--border-focus);
+        }
+      }
+    }
+
+    .log-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+
+      button {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+        transition: all 0.3s;
+      }
+
+      .btn-edit {
+        background-color: var(--info-bg);
+        color: var(--info-text);
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+
+      .btn-delete {
+        background-color: var(--error-bg);
+        color: var(--error-text);
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+
+      .btn-save {
+        background-color: var(--success-bg);
+        color: var(--success-text);
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+
+      .btn-cancel {
+        background-color: var(--btn-secondary-bg);
+        color: var(--btn-secondary-text);
+
+        &:hover {
+          background-color: var(--btn-secondary-hover);
+        }
+      }
+    }
+  }
+}
+
+// Status Actions
+.status-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  .btn-status {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s;
+    background-color: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+
+    &:hover {
+      background-color: var(--btn-primary-hover);
+    }
+
+    &.btn-warning {
+      background-color: var(--warning-bg);
+      color: var(--warning-text);
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+
+    &.btn-danger {
+      background-color: var(--btn-danger-bg);
+      color: var(--btn-danger-text);
+
+      &:hover {
+        background-color: var(--btn-danger-hover);
+      }
+    }
+  }
+}
+
+// Button Styles
+.btn-primary {
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border: none;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: var(--btn-primary-hover);
   }
 }
