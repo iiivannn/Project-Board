@@ -4,22 +4,22 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background-color: #f5f5f5;
+  background-color: var(--bg-secondary);
 }
 
 .register-card {
   width: 100%;
   max-width: 400px;
   padding: 40px;
-  background: white;
-  border: 1px solid #e0e0e0;
+  background: var(--card-bg);
+  border: 1px solid var(--border-primary);
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px var(--card-shadow);
 
   h1 {
     margin-bottom: 30px;
     text-align: center;
-    color: #333;
+    color: var(--text-primary);
     font-size: 24px;
   }
 }
@@ -31,7 +31,7 @@
     label {
       display: block;
       margin-bottom: 8px;
-      color: #555;
+      color: var(--text-secondary);
       font-weight: 500;
       font-size: 14px;
     }
@@ -39,25 +39,27 @@
     input {
       width: 100%;
       padding: 12px;
-      border: 1px solid #ddd;
+      border: 1px solid var(--border-secondary);
       border-radius: 4px;
       font-size: 14px;
       transition: border-color 0.3s;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
 
       &:focus {
         outline: none;
-        border-color: #0070f3;
+        border-color: var(--border-focus);
       }
     }
   }
 }
 
 .register-error {
-  color: #d32f2f;
+  color: var(--error-text);
   margin-bottom: 20px;
   padding: 12px;
-  background-color: #ffebee;
-  border: 1px solid #ef5350;
+  background-color: var(--error-bg);
+  border: 1px solid var(--error-border);
   border-radius: 4px;
   font-size: 14px;
 }
@@ -65,8 +67,8 @@
 .register-button {
   width: 100%;
   padding: 12px;
-  background-color: #0070f3;
-  color: white;
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -75,11 +77,12 @@
   transition: background-color 0.3s;
 
   &:hover:not(:disabled) {
-    background-color: #0051cc;
+    background-color: var(--btn-primary-hover);
   }
 
   &:disabled {
-    background-color: #ccc;
+    background-color: var(--btn-disabled-bg);
+    color: var(--btn-disabled-text);
     cursor: not-allowed;
   }
 }
@@ -87,11 +90,11 @@
 .register-footer {
   margin-top: 20px;
   text-align: center;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 14px;
 
   a {
-    color: #0070f3;
+    color: var(--btn-primary-bg);
     text-decoration: none;
 
     &:hover {

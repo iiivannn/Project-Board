@@ -1,3 +1,4 @@
+@use "./variables";
 @use "./register";
 @use "./login";
 @use "./navigation";
@@ -5,6 +6,7 @@
 @use "./rewards";
 @use "./settings";
 
+// Global styles
 * {
   margin: 0;
   padding: 0;
@@ -17,4 +19,39 @@ body {
     "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+// Loading state
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+// Smooth scrolling
+html {
+  scroll-behavior: smooth;
+}
+
+// Custom scrollbar
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+
+  &:hover {
+    background: var(--scrollbar-thumb-hover);
+  }
 }

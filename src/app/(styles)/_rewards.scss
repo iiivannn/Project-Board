@@ -2,41 +2,43 @@
   h1 {
     margin-bottom: 30px;
     font-size: 32px;
-    color: #333;
+    color: var(--text-primary);
   }
 }
 
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  background: white;
+  background: var(--card-bg);
+  border: 1px solid var(--border-primary);
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px var(--card-shadow);
 
   p {
     font-size: 16px;
-    color: #666;
+    color: var(--text-secondary);
   }
 }
 
 .rewards-table {
-  background: white;
+  background: var(--card-bg);
+  border: 1px solid var(--border-primary);
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px var(--card-shadow);
   overflow: hidden;
 
   .table-header {
     display: grid;
     grid-template-columns: 2fr 2fr 1fr;
-    background-color: #f8f9fa;
-    border-bottom: 2px solid #e0e0e0;
+    background-color: var(--bg-tertiary);
+    border-bottom: 2px solid var(--border-primary);
     padding: 0 20px;
 
     .header-cell {
       padding: 16px 10px;
       font-weight: 600;
       font-size: 14px;
-      color: #555;
+      color: var(--text-secondary);
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -47,11 +49,11 @@
       display: grid;
       grid-template-columns: 2fr 2fr 1fr;
       padding: 0 20px;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid var(--border-primary);
       transition: background-color 0.2s;
 
       &:hover {
-        background-color: #f8f9fa;
+        background-color: var(--bg-hover);
       }
 
       &:last-child {
@@ -67,21 +69,21 @@
         h3 {
           font-size: 16px;
           font-weight: 600;
-          color: #333;
+          color: var(--text-primary);
           margin-bottom: 4px;
         }
 
         p {
           font-size: 14px;
-          color: #666;
+          color: var(--text-secondary);
           margin: 0;
         }
 
         &.reward-cell {
           .reward-badge {
             display: inline-block;
-            background-color: #e8f5e9;
-            color: #2e7d32;
+            background-color: var(--reward-bg);
+            color: var(--reward-text);
             padding: 8px 16px;
             border-radius: 20px;
             font-size: 14px;
@@ -91,7 +93,7 @@
 
         &.date-cell {
           font-size: 14px;
-          color: #666;
+          color: var(--text-secondary);
         }
       }
     }
