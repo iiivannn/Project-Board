@@ -1,0 +1,166 @@
+// Light Theme Variables
+:root,
+[data-theme="light"] {
+  // Background colors
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-tertiary: #fafafa;
+  --bg-hover: #f0f0f0;
+
+  // Text colors
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-disabled: #999999;
+
+  // Border colors
+  --border-primary: #e0e0e0;
+  --border-secondary: #ddd;
+  --border-focus: #0070f3;
+
+  // Component colors
+  --card-bg: #ffffff;
+  --card-shadow: rgba(0, 0, 0, 0.1);
+  --modal-overlay: rgba(0, 0, 0, 0.5);
+
+  // Navigation
+  --nav-bg: #1a1a1a;
+  --nav-text: #ffffff;
+  --nav-text-inactive: #aaaaaa;
+  --nav-hover: #2a2a2a;
+  --nav-active: #0070f3;
+  --nav-border: #333333;
+
+  // Status colors
+  --success-bg: #e8f5e9;
+  --success-text: #2e7d32;
+  --success-border: #66bb6a;
+
+  --error-bg: #ffebee;
+  --error-text: #d32f2f;
+  --error-border: #ef5350;
+
+  --warning-bg: #fff3e0;
+  --warning-text: #e65100;
+  --warning-border: #ffb74d;
+
+  --info-bg: #e3f2fd;
+  --info-text: #1976d2;
+  --info-border: #64b5f6;
+
+  // Button colors
+  --btn-primary-bg: #0070f3;
+  --btn-primary-hover: #0051cc;
+  --btn-primary-text: #ffffff;
+
+  --btn-secondary-bg: #f0f0f0;
+  --btn-secondary-hover: #4a4a4a;
+  --btn-secondary-text: #333333;
+
+  --btn-danger-bg: #dc3545;
+  --btn-danger-hover: #c82333;
+  --btn-danger-text: #ffffff;
+
+  --btn-disabled-bg: #cccccc;
+  --btn-disabled-text: #666666;
+
+  // Project card states
+  --card-complete-border: #4caf50;
+  --card-complete-bg: #f1f8f4;
+  --card-obsolete-opacity: 0.6;
+
+  // Reward badge
+  --reward-bg: #e8f5e9;
+  --reward-text: #2e7d32;
+
+  // Scrollbar
+  --scrollbar-track: #f1f1f1;
+  --scrollbar-thumb: #888888;
+  --scrollbar-thumb-hover: #555555;
+}
+
+// Dark Theme Variables
+[data-theme="dark"] {
+  // Background colors
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #242424;
+  --bg-tertiary: #2a2a2a;
+  --bg-hover: #333333;
+
+  // Text colors
+  --text-primary: #e0e0e0;
+  --text-secondary: #b0b0b0;
+  --text-disabled: #666666;
+
+  // Border colors
+  --border-primary: #3a3a3a;
+  --border-secondary: #444444;
+  --border-focus: #4a9eff;
+
+  // Component colors
+  --card-bg: #242424;
+  --card-shadow: rgba(0, 0, 0, 0.3);
+  --modal-overlay: rgba(0, 0, 0, 0.7);
+
+  // Navigation (stays mostly the same but slightly adjusted)
+  --nav-bg: #0d0d0d;
+  --nav-text: #ffffff;
+  --nav-text-inactive: #888888;
+  --nav-hover: #1a1a1a;
+  --nav-active: #4a9eff;
+  --nav-border: #2a2a2a;
+
+  // Status colors (darker backgrounds, brighter text)
+  --success-bg: #1b5e20;
+  --success-text: #a5d6a7;
+  --success-border: #2e7d32;
+
+  --error-bg: #b71c1c;
+  --error-text: #ef9a9a;
+  --error-border: #c62828;
+
+  --warning-bg: #e65100;
+  --warning-text: #ffcc80;
+  --warning-border: #ef6c00;
+
+  --info-bg: #01579b;
+  --info-text: #81d4fa;
+  --info-border: #0277bd;
+
+  // Button colors
+  --btn-primary-bg: #4a9eff;
+  --btn-primary-hover: #357abd;
+  --btn-primary-text: #ffffff;
+
+  --btn-secondary-bg: #3a3a3a;
+  --btn-secondary-hover: #4a4a4a;
+  --btn-secondary-text: #e0e0e0;
+
+  --btn-danger-bg: #d32f2f;
+  --btn-danger-hover: #b71c1c;
+  --btn-danger-text: #ffffff;
+
+  --btn-disabled-bg: #2a2a2a;
+  --btn-disabled-text: #666666;
+
+  // Project card states
+  --card-complete-border: #66bb6a;
+  --card-complete-bg: #1b5e20;
+  --card-obsolete-opacity: 0.4;
+
+  // Reward badge
+  --reward-bg: #1b5e20;
+  --reward-text: #a5d6a7;
+
+  // Scrollbar
+  --scrollbar-track: #2a2a2a;
+  --scrollbar-thumb: #4a4a4a;
+  --scrollbar-thumb-hover: #666666;
+}
+
+// Transition for smooth theme switching
+* {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}

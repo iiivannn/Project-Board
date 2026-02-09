@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -9,7 +10,6 @@ export default function SettingsPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [theme, setTheme] = useState("dark");
 
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -18,7 +18,6 @@ export default function SettingsPage() {
 
   const [loadingUsername, setLoadingUsername] = useState(false);
   const [loadingPassword, setLoadingPassword] = useState(false);
-  const [loadingTheme, setLoadingTheme] = useState(false);
 
   const handleUsernameChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,29 +96,6 @@ export default function SettingsPage() {
     }
   };
 
-  const handleThemeToggle = async () => {
-    setLoadingTheme(true);
-
-    try {
-      const res = await fetch("/api/user/theme", {
-        method: "PATCH",
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setTheme(data.theme);
-        // Apply theme to body
-        document.body.setAttribute("data-theme", data.theme);
-      }
-
-      setLoadingTheme(false);
-    } catch (error) {
-      console.error("Error toggling theme:", error);
-      setLoadingTheme(false);
-    }
-  };
-
   const handleLogout = async () => {
     await signOut({ redirect: false });
     window.location.href = "/login";
@@ -132,7 +108,6 @@ export default function SettingsPage() {
         const data = await res.json();
         setUsername(data.username);
         setNewUsername(data.username);
-        setTheme(data.theme);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -236,26 +211,6 @@ export default function SettingsPage() {
               {loadingPassword ? "Updating..." : "Update Password"}
             </button>
           </form>
-        </div>
-
-        {/* Theme Section */}
-        <div className="settings-card">
-          <h2>Theme</h2>
-          <div className="theme-toggle-container">
-            <p>
-              Current theme:{" "}
-              <strong>{theme === "dark" ? "Dark" : "Light"}</strong>
-            </p>
-            <button
-              onClick={handleThemeToggle}
-              disabled={loadingTheme}
-              className="theme-toggle-button"
-            >
-              {loadingTheme
-                ? "Switching..."
-                : `Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`}
-            </button>
-          </div>
         </div>
 
         {/* Logout Section */}
