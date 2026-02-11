@@ -35,7 +35,7 @@
   --btn-primary-hover: #0051cc;
   --btn-primary-text: #ffffff;
   --btn-secondary-bg: #f0f0f0;
-  --btn-secondary-hover: #4a4a4a;
+  --btn-secondary-hover: #d3d3d3;
   --btn-secondary-text: #333333;
   --btn-danger-bg: #dc3545;
   --btn-danger-hover: #c82333;
@@ -543,6 +543,11 @@
   display: flex;
   flex-direction: column;
   max-height: 500px;
+  transition: background-color 0.2s;
+}
+.column.drag-over {
+  background-color: var(--bg-hover);
+  border-color: var(--border-focus);
 }
 @media (min-width: 768px) {
   .column {
@@ -605,7 +610,17 @@
   border-radius: 6px;
   padding: 15px;
   transition: all 0.3s;
-  cursor: pointer;
+  cursor: grab;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.project-card:active {
+  cursor: grabbing;
+}
+.project-card.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
 }
 .project-card:hover {
   box-shadow: 0 4px 12px var(--card-shadow);
@@ -632,6 +647,7 @@
   padding: 4px 8px;
   border-radius: 12px;
   font-weight: 500;
+  margin-right: 8px;
 }
 .project-card .reward-badge {
   display: inline-block;
@@ -824,7 +840,7 @@
   background-color: var(--warning-bg);
   color: var(--warning-text);
 }
-.project-info .info-row .status-badge.status-in-progress {
+.project-info .info-row .status-badge.status-inprogress {
   background-color: var(--info-bg);
   color: var(--info-text);
 }
@@ -1087,6 +1103,80 @@
 }
 .btn-primary:hover {
   background-color: var(--btn-primary-hover);
+}
+
+[data-dnd-kit-overlay] .project-card {
+  cursor: grabbing;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  transform: rotate(3deg);
+}
+
+.reward-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+.reward-actions .btn-edit-reward,
+.reward-actions .btn-delete-reward {
+  flex: 1;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+.reward-actions .btn-edit-reward {
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+}
+.reward-actions .btn-edit-reward:hover {
+  background-color: var(--btn-primary-hover);
+}
+.reward-actions .btn-delete-reward {
+  background-color: var(--btn-danger-bg);
+  color: var(--btn-danger-text);
+}
+.reward-actions .btn-delete-reward:hover {
+  background-color: var(--btn-danger-hover);
+  color: var(--btn-danger-text);
+}
+
+.modal-warning {
+  color: var(--error-text);
+  background-color: var(--error-bg);
+  padding: 12px;
+  border-radius: 4px;
+  border: 1px solid var(--error-border);
+}
+
+.btn-danger-action {
+  background-color: var(--btn-danger-bg);
+  color: var(--btn-danger-text);
+}
+.btn-danger-action:hover {
+  background-color: var(--btn-danger-hover);
+}
+
+select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-secondary);
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+select:focus {
+  outline: none;
+  border-color: var(--border-focus);
+}
+select option {
+  padding: 10px;
 }
 
 .rewards-page h1 {

@@ -156,3 +156,75 @@ export async function PATCH(
     );
   }
 }
+
+// DELETE - Delete reward (requires password verification)
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { password } = await req.json();
+
+    if (!password) {
+      return NextResponse.json(
+        { error: "Password is required" },
+        { status: 400 },
+      );
+    }
+
+    // Verify password
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return NextResponse.json({ error: "Invalid password" }, { status: 401 });
+    }
+
+    // Verify project belongs to user
+    const project = await prisma.project.findUnique({
+      where: { id: params.id },
+      include: { reward: true },
+    });
+
+    if (!project) {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    }
+
+    if (project.userId !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    if (!project.reward) {
+      return NextResponse.json(
+        { error: "No reward found for this project" },
+        { status: 404 },
+      );
+    }
+
+    // Delete reward
+    await prisma.reward.delete({
+      where: { id: project.reward.id },
+    });
+
+    return NextResponse.json({ message: "Reward deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting reward:", error);
+    return NextResponse.json(
+      { error: "Failed to delete reward" },
+      { status: 500 },
+    );
+  }
+}
