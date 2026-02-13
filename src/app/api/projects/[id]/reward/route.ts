@@ -160,9 +160,11 @@ export async function PATCH(
 // DELETE - Delete reward (requires password verification)
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
@@ -195,7 +197,7 @@ export async function DELETE(
 
     // Verify project belongs to user
     const project = await prisma.project.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: { reward: true },
     });
 

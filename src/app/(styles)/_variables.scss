@@ -1,5 +1,4 @@
 // Light Theme Variables
-:root,
 [data-theme="light"] {
   // Background colors
   --bg-primary: #ffffff;
@@ -79,6 +78,7 @@
 }
 
 // Dark Theme Variables
+:root,
 [data-theme="dark"] {
   // Background colors
   --bg-primary: #1a1a1a;

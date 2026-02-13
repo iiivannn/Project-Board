@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { signIn, useSession } from "next-auth/react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
 function LoginForm() {
@@ -12,6 +12,14 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
   const registered = searchParams.get("registered");
+  const router = useRouter();
+  const { status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/dashboard/tasks");
+    }
+  }, [status, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,10 +31,7 @@ function LoginForm() {
         username,
         password,
         redirect: false,
-        callbackUrl: "/dashboard/tasks",
       });
-
-      console.log("SignIn result:", result);
 
       if (result?.error) {
         setError("Invalid username or password");
@@ -34,18 +39,19 @@ function LoginForm() {
         return;
       }
 
-      if (result?.ok) {
-        window.location.href = "/dashboard/tasks";
-      } else {
-        setError("Login failed. Please try again.");
-        setLoading(false);
-      }
+      // Login successful - redirect to dashboard
+      window.location.href = "/dashboard/tasks";
     } catch (err) {
-      console.error("Login error:", err);
       setError("Something went wrong");
       setLoading(false);
+      console.error(err);
     }
   };
+
+  // Show loading while checking session
+  if (status === "loading") {
+    return <div className="loading">Loading...</div>;
+  }
 
   return (
     <div className="login-container">
@@ -66,7 +72,6 @@ function LoginForm() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              autoComplete="username"
             />
           </div>
 
@@ -77,7 +82,6 @@ function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              autoComplete="current-password"
             />
           </div>
 

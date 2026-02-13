@@ -1,7 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useState } from "react";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState("");
@@ -9,13 +11,22 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { status } = useSession();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/dashboard/tasks");
+    }
+  }, [status, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
     if (password !== confirmPassword) {
-      setError("Password do not match");
+      setError("Passwords do not match");
       return;
     }
 
@@ -24,7 +35,7 @@ export default function RegisterPage() {
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
-        headers: { "Content-type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
 
@@ -36,17 +47,24 @@ export default function RegisterPage() {
         return;
       }
 
+      // Registration successful, redirect to login
       window.location.href = "/login?registered=true";
-    } catch {
+    } catch (err) {
       setError("Something went wrong");
       setLoading(false);
+      console.error(err);
     }
   };
+
+  // Show loading while checking session
+  if (status === "loading") {
+    return <div className="loading">Loading...</div>;
+  }
 
   return (
     <div className="register-container">
       <div className="register-card">
-        <h1>Register a Project Board Account</h1>
+        <h1>Register for Project Board</h1>
 
         <form onSubmit={handleSubmit} className="register-form">
           <div className="form-group">
@@ -54,9 +72,7 @@ export default function RegisterPage() {
             <input
               type="text"
               value={username}
-              onChange={(e) => {
-                setUsername(e.target.value);
-              }}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>
@@ -66,9 +82,7 @@ export default function RegisterPage() {
             <input
               type="password"
               value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
@@ -78,9 +92,7 @@ export default function RegisterPage() {
             <input
               type="password"
               value={confirmPassword}
-              onChange={(e) => {
-                setConfirmPassword(e.target.value);
-              }}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
           </div>
