@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "../../auth/[...nextauth]/route";
+import bcrypt from "bcryptjs";
 
 export async function PATCH(
   req: Request,
@@ -16,40 +17,67 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { title, description, status } = await req.json();
+    const body = await req.json();
+    const { title, description, status, password } = body;
 
-    const existingProject = await prisma.project.findUnique({
+    // Verify project belongs to user
+    const project = await prisma.project.findUnique({
       where: { id: id },
     });
 
-    if (!existingProject) {
+    if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
-    if (existingProject.userId !== session.user.id) {
+    if (project.userId !== session.user.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    // If title or description is being changed, require password
+    if ((title !== undefined || description !== undefined) && password) {
+      // Verify password
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+      });
+
+      if (!user) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordValid) {
+        return NextResponse.json(
+          { error: "Invalid password" },
+          { status: 401 },
+        );
+      }
+    }
+
+    // Build update data
     const updateData: {
       title?: string;
       description?: string;
       status?: string;
     } = {};
 
-    if (title) updateData.title = title;
+    if (title !== undefined) updateData.title = title;
     if (description !== undefined) updateData.description = description;
-    if (status) updateData.status = status;
+    if (status !== undefined) updateData.status = status;
 
-    const project = await prisma.project.update({
+    // Update project
+    const updatedProject = await prisma.project.update({
       where: { id: id },
       data: updateData,
       include: {
-        logs: true,
+        logs: {
+          orderBy: { createdAt: "desc" },
+        },
         reward: true,
       },
     });
 
-    return NextResponse.json(project);
+    return NextResponse.json(updatedProject);
   } catch (error) {
     console.error("Error updating project:", error);
     return NextResponse.json(
@@ -72,15 +100,36 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const existingProject = await prisma.project.findUnique({
+    const { password } = await req.json();
+
+    if (!password)
+      return NextResponse.json(
+        { error: "Password is required" },
+        { status: 400 },
+      );
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return NextResponse.json({ error: "Invalid password" }, { status: 401 });
+    }
+    const project = await prisma.project.findUnique({
       where: { id: id },
     });
 
-    if (!existingProject) {
+    if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
-    if (existingProject.userId !== session.user.id) {
+    if (project.userId !== session.user.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

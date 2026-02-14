@@ -4,7 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
-// POST - Add reward to completed project
+// POST - Add reward
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -42,12 +42,12 @@ export async function POST(
     }
 
     // Check if project is completed
-    if (project.status !== "complete") {
-      return NextResponse.json(
-        { error: "Can only add rewards to completed projects" },
-        { status: 400 },
-      );
-    }
+    // if (project.status !== "complete") {
+    //   return NextResponse.json(
+    //     { error: "Can only add rewards to completed projects" },
+    //     { status: 400 },
+    //   );
+    // }
 
     // Check if reward already exists
     if (project.reward) {
