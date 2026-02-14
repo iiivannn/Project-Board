@@ -82,11 +82,11 @@ export default function Navigation() {
             Tasks
           </Link>
           <Link
-            href="/dashboard/rewards"
-            className={pathname === "/dashboard/rewards" ? "tab active" : "tab"}
+            href="/dashboard/details"
+            className={pathname === "/dashboard/details" ? "tab active" : "tab"}
             onClick={closeMenu}
           >
-            Rewards
+            Details
           </Link>
           <Link
             href="/dashboard/settings"
@@ -106,7 +106,7 @@ export default function Navigation() {
             onClick={handleToggleTheme}
             aria-label="Toggle theme"
           >
-            <span className="theme-icon">{theme === "dark" ? "☀️" : "🌙"}</span>
+            {/* <span className="theme-icon">{theme === "dark" ? "☀️" : "🌙"}</span> */}
             <span className="theme-text">
               {theme === "dark" ? "Light Mode" : "Dark Mode"}
             </span>
