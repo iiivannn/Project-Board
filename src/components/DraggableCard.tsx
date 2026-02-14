@@ -32,6 +32,7 @@ export default function DraggableCard({
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    touchAction: "none",
   };
 
   return (
@@ -41,7 +42,12 @@ export default function DraggableCard({
       {...attributes}
       {...listeners}
       className={`project-card ${project.status} ${isDragging ? "dragging" : ""}`}
-      onClick={onClick}
+      onClick={() => {
+        // Only allow click if not dragging
+        if (!isDragging) {
+          onClick();
+        }
+      }}
     >
       <h3>{project.title}</h3>
       <p>{project.description}</p>

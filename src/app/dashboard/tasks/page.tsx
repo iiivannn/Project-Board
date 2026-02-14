@@ -6,7 +6,8 @@ import {
   DragEndEvent,
   DragOverlay,
   DragStartEvent,
-  PointerSensor,
+  TouchSensor,
+  MouseSensor,
   useSensor,
   useSensors,
   closestCorners,
@@ -80,9 +81,15 @@ export default function TasksPage() {
   const [loading, setLoading] = useState(true);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(MouseSensor, {
       activationConstraint: {
         distance: 8, // 8px movement required to start drag
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200, // 200ms press delay for touch
+        tolerance: 5, // 5px movement tolerance
       },
     }),
   );
