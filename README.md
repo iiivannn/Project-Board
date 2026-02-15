@@ -2,7 +2,14 @@
 
 A modern, full-stack project management application with drag-and-drop functionality, task tracking, and reward systems. Built with Next.js 14, TypeScript, and PostgreSQL.
 
-> 🚀 **[Live Demo](https://project-board-eosin.vercel.app/)**
+## Quick Links
+
+- 🚀 [Live Demo](https://project-board-eosin.vercel.app/) - Try it now!
+- ✨ [Features](#-features) - Discover the project
+- 🛠️ [Tech Stack](#️-tech-stack) - View tools used in the project
+- 🎨 [Design Features](#-design-features) - UI/UX principles applied
+- 🔒 [Security Features](#-security-features) - Data security using backend
+- 📖 [Installation](#-installation) - Run locally
 
 ## ✨ Features
 
@@ -119,13 +126,13 @@ A modern, full-stack project management application with drag-and-drop functiona
 
 <br/>
 
-### Installation
+## 📖 Installation
 
 1. **Clone the repository**
 
 ```bash
    git clone https://github.com/iiivannn/Project-Board.git
-   cd project-board-origin
+   cd Project-Board
 ```
 
 2. **Install dependencies**
@@ -163,3 +170,11 @@ A modern, full-stack project management application with drag-and-drop functiona
 6. **Open your browser**
 
    Navigate to [http://localhost:3000](http://localhost:3000)
+
+<br/>
+
+<div align="center">
+
+**Made with ❤️ and ☕ :)**
+
+</div>
