@@ -48,6 +48,10 @@ export default function TasksPage() {
   const [selectedProjectForAction, setSelectedProjectForAction] =
     useState<string>("");
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
   // Form states
   const [newProjectTitle, setNewProjectTitle] = useState("");
   const [newProjectDescription, setNewProjectDescription] = useState("");
@@ -148,20 +152,38 @@ export default function TasksPage() {
     }
   };
 
-  const handleDeleteProject = async (projectId: string) => {
+  const handleDeleteProject = async () => {
     if (!confirm("Are you sure you want to delete this project?")) return;
 
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordError("");
+
+    if (!selectedProject || !deletePassword) return;
+
     try {
-      const res = await fetch(`/api/projects/${projectId}`, {
+      const projectRes = await fetch(`/api/projects/${selectedProject.id}`, {
         method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: deletePassword }),
       });
 
-      if (res.ok) {
-        setShowProjectModal(false);
-        fetchProjects();
+      if (!projectRes.ok) {
+        const data = await projectRes.json();
+        setPasswordError(data.error || "Failed to delete project");
+        return;
       }
+
+      setDeletePassword("");
+      setShowDeleteModal(false);
+      fetchProjects();
+      setShowProjectModal(false);
     } catch (error) {
       console.error("Error deleting project: ", error);
+      setPasswordError("Something went wrong");
     }
   };
 
@@ -662,74 +684,43 @@ export default function TasksPage() {
                 {/* ADD PROJECT MODE */}
                 {modalMode === "addProject" && (
                   <div className="section">
-                    <h3>Select Project or Create New</h3>
-                    <div className="form-group">
-                      <label htmlFor="project-action-select">Project</label>
-                      <select
-                        id="project-action-select"
-                        value={selectedProjectForAction}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          if (value === "__new__") {
-                            // Show create new form
-                            setSelectedProjectForAction("__new__");
-                          } else if (value) {
-                            // Load existing project
-                            const proj = projects.find((p) => p.id === value);
-                            if (proj) {
-                              setSelectedProject(proj);
-                              setSelectedProjectForAction(value);
-                              setModalMode("view");
-                            }
+                    <form onSubmit={handleAddProject}>
+                      <div className="form-group">
+                        <label htmlFor="project-title">Title</label>
+                        <input
+                          id="project-title"
+                          type="text"
+                          value={newProjectTitle}
+                          onChange={(e) => setNewProjectTitle(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="project-description">Description</label>
+                        <textarea
+                          id="project-description"
+                          value={newProjectDescription}
+                          onChange={(e) =>
+                            setNewProjectDescription(e.target.value)
                           }
-                        }}
-                      >
-                        <option value="">-- Select a project --</option>
-                        <option value="__new__">Create New Project</option>
-                      </select>
-                    </div>
+                          rows={4}
+                        />
+                      </div>
 
-                    {selectedProjectForAction === "__new__" && (
-                      <form onSubmit={handleAddProject}>
-                        <div className="form-group">
-                          <label htmlFor="project-title">Title</label>
-                          <input
-                            id="project-title"
-                            type="text"
-                            value={newProjectTitle}
-                            onChange={(e) => setNewProjectTitle(e.target.value)}
-                            required
-                          />
-                        </div>
-                        <div className="form-group">
-                          <label htmlFor="project-description">
-                            Description
-                          </label>
-                          <textarea
-                            id="project-description"
-                            value={newProjectDescription}
-                            onChange={(e) =>
-                              setNewProjectDescription(e.target.value)
-                            }
-                            rows={4}
-                          />
-                        </div>
-
-                        <div className="modal-actions">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setShowProjectModal(false);
-                              setModalMode("view");
-                              setSelectedProjectForAction("");
-                            }}
-                          >
-                            Cancel
-                          </button>
-                          <button type="submit">Add Project</button>
-                        </div>
-                      </form>
-                    )}
+                      <div className="modal-actions">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowProjectModal(false);
+                            setModalMode("view");
+                            setSelectedProjectForAction("");
+                          }}
+                        >
+                          Cancel
+                        </button>
+                        <button type="submit">Add Project</button>
+                      </div>
+                    </form>
                   </div>
                 )}
 
@@ -1071,9 +1062,7 @@ export default function TasksPage() {
                           </button>
                         )}
                         <button
-                          onClick={() =>
-                            handleDeleteProject(selectedProject.id)
-                          }
+                          onClick={() => handleDeleteProject()}
                           className="btn-status btn-danger"
                         >
                           Delete Project
@@ -1199,6 +1188,61 @@ export default function TasksPage() {
                   </button>
                   <button type="submit" className="btn-danger-action">
                     Delete Reward
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* DELETE PROJECT CONFIRMATION MODAL */}
+        {showDeleteModal && selectedProject && (
+          <div
+            className="modal-overlay"
+            onClick={() => {
+              setShowDeleteModal(false);
+              setDeletePassword("");
+              setPasswordError("");
+            }}
+          >
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <h2>Delete Project</h2>
+              <p className="modal-info modal-warning">
+                You are about to permanently delete{" "}
+                <strong>{selectedProject.title}</strong>. This will also delete
+                all logs and rewards associated with this project. This action
+                cannot be undone.
+              </p>
+              <form onSubmit={handleConfirmDelete}>
+                <div className="form-group">
+                  <label htmlFor="delete-password">Password</label>
+                  <input
+                    id="delete-password"
+                    type="password"
+                    value={deletePassword}
+                    onChange={(e) => setDeletePassword(e.target.value)}
+                    placeholder="Enter your password to confirm..."
+                    required
+                  />
+                </div>
+
+                {passwordError && (
+                  <div className="error-message">{passwordError}</div>
+                )}
+
+                <div className="modal-actions">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowDeleteModal(false);
+                      setDeletePassword("");
+                      setPasswordError("");
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn-danger-action">
+                    Delete Project
                   </button>
                 </div>
               </form>
