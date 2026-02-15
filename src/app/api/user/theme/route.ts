@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "../../auth/[...nextauth]/route";
 
-export async function PATCH() {
+export async function PATCH(req: Request) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -20,11 +20,18 @@ export async function PATCH() {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const newTheme = user.theme === "dark" ? "light" : "dark";
+    const { theme } = await req.json();
+
+    if (theme !== "dark" && theme !== "light") {
+      return NextResponse.json(
+        { error: "Invalid theme. Must be 'dark' or 'light'" },
+        { status: 400 },
+      );
+    }
 
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
-      data: { theme: newTheme },
+      data: { theme },
       select: {
         id: true,
         username: true,

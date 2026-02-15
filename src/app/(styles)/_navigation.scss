@@ -9,7 +9,7 @@
 // Hamburger Button (Mobile Only)
 .hamburger {
   position: fixed;
-  top: 20px;
+  top: 18px;
   left: 20px;
   z-index: 1100;
   width: 40px;
@@ -36,16 +36,21 @@
   }
 
   &.open {
-    span:nth-child(1) {
-      transform: rotate(50deg) translate(6px, 4px);
-    }
+    left: 230px;
 
-    span:nth-child(2) {
-      opacity: 0;
-    }
+    span {
+      width: 18px;
+      &:nth-child(1) {
+        transform: rotate(49deg) translate(6px, 4px);
+      }
 
-    span:nth-child(3) {
-      transform: rotate(-50deg) translate(7px, -6px);
+      &:nth-child(2) {
+        opacity: 0;
+      }
+
+      &:nth-child(3) {
+        transform: rotate(-48deg) translate(7px, -6px);
+      }
     }
   }
 
@@ -100,25 +105,21 @@
 
   .navigation-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     margin-bottom: 40px;
     padding-bottom: 20px;
     border-bottom: 1px solid var(--nav-border);
+
+    img {
+      margin-right: 6px;
+    }
 
     h2 {
       font-size: 18px;
       font-weight: 600;
       color: var(--nav-text);
       margin: 0;
-      width: 100%;
-      text-align: center;
-      transform: translate(20px, 6px);
-
-      @media (min-width: 1024px) {
-        text-align: left;
-        transform: unset;
-      }
+      width: max-content;
     }
   }
 
@@ -155,31 +156,43 @@
     padding-top: 20px;
     border-top: 1px solid var(--nav-border);
 
-    .theme-toggle {
-      width: 100%;
-      padding: 12px 16px;
-      background-color: var(--nav-hover);
-      color: var(--nav-text);
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      justify-content: center;
+    .theme-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
 
-      .theme-icon {
-        font-size: 18px;
-      }
+      .theme-button {
+        padding: 10px 12px;
+        background-color: var(--nav-hover);
+        color: var(--nav-text-inactive);
+        border: 1px solid transparent;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
 
-      .theme-text {
-        font-size: 14px;
-      }
+        .theme-icon {
+          font-size: 16px;
+        }
 
-      &:hover {
-        background-color: var(--btn-secondary-hover);
+        .theme-text {
+          font-size: 13px;
+        }
+
+        &:hover {
+          background-color: var(--btn-secondary-hover);
+          color: var(--nav-text);
+        }
+
+        &.active {
+          background-color: var(--nav-active);
+          color: var(--nav-text);
+          border-color: var(--nav-active);
+        }
       }
     }
 

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Project Board Origin",
+  title: "Project Board",
   description: "Manage your projects",
 };
 

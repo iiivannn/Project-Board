@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
+import Image from "next/image";
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -25,10 +26,12 @@ export default function Navigation() {
     fetchTheme();
   }, []);
 
-  const handleToggleTheme = async () => {
+  const handleSetTheme = async (newTheme: "light" | "dark") => {
     try {
       const res = await fetch("/api/user/theme", {
         method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ theme: newTheme }),
       });
 
       const data = await res.json();
@@ -38,7 +41,7 @@ export default function Navigation() {
         document.body.setAttribute("data-theme", data.theme);
       }
     } catch (error) {
-      console.error("Error toggling theme:", error);
+      console.error("Error setting theme:", error);
     }
   };
 
@@ -70,7 +73,13 @@ export default function Navigation() {
       {/* Navigation */}
       <nav className={`navigation ${isOpen ? "open" : ""}`}>
         <div className="navigation-header">
-          <h2>Project Board Origin</h2>
+          <Image
+            src="/project-board-logo.png"
+            alt="Project Board Logo"
+            width={32}
+            height={32}
+          />
+          <h2>Project Board</h2>
         </div>
 
         <div className="navigation-tabs">
@@ -101,16 +110,23 @@ export default function Navigation() {
 
         <div className="navigation-footer">
           {/* Theme Toggle */}
-          <button
-            className="theme-toggle"
-            onClick={handleToggleTheme}
-            aria-label="Toggle theme"
-          >
-            {/* <span className="theme-icon">{theme === "dark" ? "☀️" : "🌙"}</span> */}
-            <span className="theme-text">
-              {theme === "dark" ? "Light Mode" : "Dark Mode"}
-            </span>
-          </button>
+          {/* Theme Toggle Buttons */}
+          <div className="theme-buttons">
+            <button
+              className={`theme-button ${theme === "light" ? "active" : ""}`}
+              onClick={() => handleSetTheme("light")}
+              aria-label="Light mode"
+            >
+              <span className="theme-text">Light</span>
+            </button>
+            <button
+              className={`theme-button ${theme === "dark" ? "active" : ""}`}
+              onClick={() => handleSetTheme("dark")}
+              aria-label="Dark mode"
+            >
+              <span className="theme-text">Dark</span>
+            </button>
+          </div>
 
           {/* Logout Button */}
           <button onClick={handleLogout} className="logout-button">
