@@ -6,47 +6,56 @@
 
 .hamburger {
   position: fixed;
-  top: 18px;
-  left: 20px;
+  top: 16px;
+  left: 16px;
   z-index: 1100;
-  width: 40px;
-  height: 40px;
-  background-color: var(--nav-bg);
-  border: 1px solid var(--nav-border);
-  border-radius: 6px;
+  width: 34px;
+  height: 34px;
+  background-color: transparent;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 6px;
-  padding: 8px;
-  transition: all 0.2s;
+  gap: 4px;
+  padding: 6px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: var(--nav-hover);
+  }
 
   span {
     display: block;
-    width: 24px;
+    width: 18px;
     height: 2px;
-    background-color: var(--nav-text);
-    transition: all 0.2s;
+    background-color: var(--text-primary);
+    transition:
+      transform 0.22s ease,
+      opacity 0.22s ease,
+      width 0.22s ease;
     border-radius: 2px;
   }
 
   &.open {
-    left: 230px;
+    left: 232px;
 
     span {
-      width: 18px;
+      background-color: var(--nav-text);
+
       &:nth-child(1) {
-        transform: rotate(49deg) translate(6px, 4px);
+        transform: translateY(6px) rotate(45deg);
       }
 
       &:nth-child(2) {
         opacity: 0;
+        transform: scaleX(0);
       }
 
       &:nth-child(3) {
-        transform: rotate(-48deg) translate(7px, -6px);
+        transform: translateY(-6px) rotate(-45deg);
       }
     }
   }
@@ -101,6 +110,7 @@
     margin-bottom: 32px;
     padding-bottom: 16px;
     border-bottom: 1px solid var(--nav-border);
+    text-decoration: none;
 
     img {
       margin-right: 8px;
@@ -217,9 +227,13 @@
 
 .dashboard-content {
   flex: 1;
-  padding: 80px 20px 20px;
+  padding: 66px 20px 32px;
   background-color: var(--bg-primary);
   min-height: 100vh;
+
+  @media (min-width: 480px) {
+    padding: 66px 24px 32px;
+  }
 
   @media (min-width: 1024px) {
     margin-left: 280px;

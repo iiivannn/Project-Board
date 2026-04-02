@@ -16,6 +16,10 @@
   border-radius: 8px;
   box-shadow: 0 2px 10px var(--card-shadow);
 
+  @media (max-width: 480px) {
+    padding: 24px;
+  }
+
   h1 {
     margin-bottom: 30px;
     text-align: center;

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import ProjectSelect from "@/components/ProjectSelect";
+import MutationSpinner from "@/components/MutationSpinner";
 
 type Project = {
   id: string;
@@ -29,8 +30,6 @@ type Log = {
 export default function DetailsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
-  const [loading, setLoading] = useState(true);
-
   const [editedTitle, setEditedTitle] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
   const [editedReward, setEditedReward] = useState("");
@@ -43,6 +42,7 @@ export default function DetailsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
 
+  const [isMutating, setIsMutating] = useState(false);
   const [showAddLogForm, setShowAddLogForm] = useState(false);
   const [newLogContent, setNewLogContent] = useState("");
   const [editingLogId, setEditingLogId] = useState<string | null>(null);
@@ -94,8 +94,6 @@ export default function DetailsPage() {
       setProjects(data);
     } catch (error) {
       console.error("Error fetching projects:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -114,6 +112,7 @@ export default function DetailsPage() {
 
     if (!selectedProject || !password) return;
 
+    setIsMutating(true);
     try {
       const projectRes = await fetch(`/api/projects/${selectedProject.id}`, {
         method: "PATCH",
@@ -160,10 +159,12 @@ export default function DetailsPage() {
       setPassword("");
       setShowPasswordModal(false);
       setHasChanges(false);
-      fetchProjects();
+      await fetchProjects();
     } catch (error) {
       console.error("Error saving changes:", error);
       setPasswordError("Something went wrong");
+    } finally {
+      setIsMutating(false);
     }
   };
 
@@ -196,6 +197,7 @@ export default function DetailsPage() {
 
     if (!selectedProject || !deletePassword) return;
 
+    setIsMutating(true);
     try {
       const projectRes = await fetch(`/api/projects/${selectedProject.id}`, {
         method: "DELETE",
@@ -212,10 +214,12 @@ export default function DetailsPage() {
       setDeletePassword("");
       setShowDeleteModal(false);
       setSelectedProjectId("");
-      fetchProjects();
+      await fetchProjects();
     } catch (error) {
       console.error("Error deleting project: ", error);
       setPasswordError("Something went wrong");
+    } finally {
+      setIsMutating(false);
     }
   };
 
@@ -223,6 +227,7 @@ export default function DetailsPage() {
     e.preventDefault();
     if (!selectedProjectId || !newLogContent.trim()) return;
 
+    setIsMutating(true);
     try {
       const res = await fetch(`/api/projects/${selectedProjectId}/logs`, {
         method: "POST",
@@ -233,16 +238,19 @@ export default function DetailsPage() {
       if (res.ok) {
         setNewLogContent("");
         setShowAddLogForm(false);
-        fetchProjects();
+        await fetchProjects();
       }
     } catch (error) {
       console.error("Error adding log:", error);
+    } finally {
+      setIsMutating(false);
     }
   };
 
   const handleUpdateLog = async (logId: string) => {
     if (!selectedProjectId || !editingLogContent.trim()) return;
 
+    setIsMutating(true);
     try {
       const res = await fetch(
         `/api/projects/${selectedProjectId}/logs/${logId}`,
@@ -256,10 +264,12 @@ export default function DetailsPage() {
       if (res.ok) {
         setEditingLogId(null);
         setEditingLogContent("");
-        fetchProjects();
+        await fetchProjects();
       }
     } catch (error) {
       console.error("Error updating log:", error);
+    } finally {
+      setIsMutating(false);
     }
   };
 
@@ -267,6 +277,7 @@ export default function DetailsPage() {
     if (!selectedProjectId) return;
     if (!confirm("Are you sure you want to delete this log?")) return;
 
+    setIsMutating(true);
     try {
       const res = await fetch(
         `/api/projects/${selectedProjectId}/logs/${logId}`,
@@ -276,19 +287,19 @@ export default function DetailsPage() {
       );
 
       if (res.ok) {
-        fetchProjects();
+        await fetchProjects();
       }
     } catch (error) {
       console.error("Error deleting log:", error);
+    } finally {
+      setIsMutating(false);
     }
   };
 
-  if (loading) {
-    return <div className="loading">Loading details...</div>;
-  }
-
   return (
-    <div className="details-page">
+    <>
+      {isMutating && <MutationSpinner />}
+      <div className="details-page">
       <h1>Project Details</h1>
 
       {/* PROJECT SELECTOR */}
@@ -613,5 +624,6 @@ export default function DetailsPage() {
         </div>
       )}
     </div>
+    </>
   );
 }

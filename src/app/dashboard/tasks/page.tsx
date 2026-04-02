@@ -14,6 +14,7 @@ import {
 } from "@dnd-kit/core";
 import DroppableColumn from "../../../components/DroppableColumn";
 import ProjectSelect from "@/components/ProjectSelect";
+import MutationSpinner from "@/components/MutationSpinner";
 
 type Project = {
   id: string;
@@ -69,6 +70,7 @@ export default function TasksPage() {
   const [deleteRewardError, setDeleteRewardError] = useState("");
 
   const [selectedProjectIdForLog, setSelectedProjectIdForLog] = useState("");
+  const [isMutating, setIsMutating] = useState(false);
 
   const formatStatus = (status: string): string => {
     const statusMap: { [key: string]: string } = {
@@ -79,8 +81,6 @@ export default function TasksPage() {
     };
     return statusMap[status] || status;
   };
-
-  const [loading, setLoading] = useState(true);
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -102,10 +102,8 @@ export default function TasksPage() {
         const res = await fetch("/api/projects");
         const data = await res.json();
         setProjects(data);
-        setLoading(false);
       } catch (error) {
         console.error("Error fetching projects: ", error);
-        setLoading(false);
       }
     }
 
@@ -117,16 +115,14 @@ export default function TasksPage() {
       const res = await fetch("/api/projects");
       const data = await res.json();
       setProjects(data);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching projects: ", error);
-      setLoading(false);
     }
   };
 
   const handleAddProject = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    setIsMutating(true);
     try {
       const res = await fetch("/api/projects", {
         method: "POST",
@@ -143,10 +139,12 @@ export default function TasksPage() {
         setShowProjectModal(false);
         setModalMode("view");
         setSelectedProjectForAction("");
-        fetchProjects();
+        await fetchProjects();
       }
     } catch (error) {
       console.error("Error creating project: ", error);
+    } finally {
+      setIsMutating(false);
     }
   };
 
@@ -162,6 +160,7 @@ export default function TasksPage() {
 
     if (!selectedProject || !deletePassword) return;
 
+    setIsMutating(true);
     try {
       const projectRes = await fetch(`/api/projects/${selectedProject.id}`, {
         method: "DELETE",
@@ -177,11 +176,13 @@ export default function TasksPage() {
 
       setDeletePassword("");
       setShowDeleteModal(false);
-      fetchProjects();
+      await fetchProjects();
       setShowProjectModal(false);
     } catch (error) {
       console.error("Error deleting project: ", error);
       setPasswordError("Something went wrong");
+    } finally {
+      setIsMutating(false);
     }
   };
 
@@ -200,6 +201,7 @@ export default function TasksPage() {
       );
     }
 
+    setIsMutating(true);
     try {
       const res = await fetch(`/api/projects/${projectId}`, {
         method: "PATCH",
@@ -234,6 +236,8 @@ export default function TasksPage() {
       }
 
       alert("Failed to update status. Reverting change...");
+    } finally {
+      setIsMutating(false);
     }
   };
 
@@ -245,6 +249,7 @@ export default function TasksPage() {
     const projectId = selectedProject?.id || selectedProjectIdForLog;
     if (!projectId) return;
 
+    setIsMutating(true);
     try {
       const res = await fetch(`/api/projects/${projectId}/logs`, {
         method: "POST",
@@ -262,7 +267,7 @@ export default function TasksPage() {
         }
 
         setSelectedProjectIdForLog("");
-        fetchProjects();
+        await fetchProjects();
 
         if (modalMode === "view" && selectedProject) {
           const refreshed = await fetch(`/api/projects`);
@@ -275,12 +280,15 @@ export default function TasksPage() {
       }
     } catch (error) {
       console.error("Error adding task log: ", error);
+    } finally {
+      setIsMutating(false);
     }
   };
 
   const handleUpdateLog = async (logId: string) => {
     if (!editingLogContent.trim() || !selectedProject) return;
 
+    setIsMutating(true);
     try {
       const res = await fetch(
         `/api/projects/${selectedProject.id}/logs/${logId}`,
@@ -294,7 +302,7 @@ export default function TasksPage() {
       if (res.ok) {
         setEditingLogId(null);
         setEditingLogContent("");
-        fetchProjects();
+        await fetchProjects();
 
         const refreshed = await fetch(`/api/projects`);
         const allProjects = await refreshed.json();
@@ -305,6 +313,8 @@ export default function TasksPage() {
       }
     } catch (error) {
       console.error("Error updating log: ", error);
+    } finally {
+      setIsMutating(false);
     }
   };
 
@@ -312,6 +322,7 @@ export default function TasksPage() {
     if (!selectedProject) return;
     if (!confirm("Are you sure you want to delete this log?")) return;
 
+    setIsMutating(true);
     try {
       const res = await fetch(
         `/api/projects/${selectedProject.id}/logs/${logId}`,
@@ -321,7 +332,7 @@ export default function TasksPage() {
       );
 
       if (res.ok) {
-        fetchProjects();
+        await fetchProjects();
 
         const refreshed = await fetch(`/api/projects`);
         const allProjects = await refreshed.json();
@@ -332,6 +343,8 @@ export default function TasksPage() {
       }
     } catch (error) {
       console.error("Error deleting log: ", error);
+    } finally {
+      setIsMutating(false);
     }
   };
 
@@ -340,6 +353,7 @@ export default function TasksPage() {
 
     if (!selectedProject || !rewardDescription.trim()) return;
 
+    setIsMutating(true);
     try {
       const res = await fetch(`/api/projects/${selectedProject.id}/reward`, {
         method: "POST",
@@ -356,7 +370,7 @@ export default function TasksPage() {
           setSelectedProjectForAction("");
         }
 
-        fetchProjects();
+        await fetchProjects();
 
         if (modalMode === "view") {
           const refreshed = await fetch(`/api/projects`);
@@ -369,6 +383,8 @@ export default function TasksPage() {
       }
     } catch (error) {
       console.log("Error adding reward: ", error);
+    } finally {
+      setIsMutating(false);
     }
   };
 
@@ -378,6 +394,7 @@ export default function TasksPage() {
 
     if (!selectedProject || !editRewardDescription.trim()) return;
 
+    setIsMutating(true);
     try {
       const res = await fetch(`/api/projects/${selectedProject.id}/reward`, {
         method: "PATCH",
@@ -398,7 +415,7 @@ export default function TasksPage() {
       setEditRewardPassword("");
       setEditRewardDescription("");
       setShowRewardEditModal(false);
-      fetchProjects();
+      await fetchProjects();
 
       const refreshed = await fetch(`/api/projects`);
       const allProjects = await refreshed.json();
@@ -409,6 +426,8 @@ export default function TasksPage() {
     } catch (error) {
       console.error("Error editing reward: ", error);
       setRewardEditError("Something went wrong");
+    } finally {
+      setIsMutating(false);
     }
   };
 
@@ -418,6 +437,7 @@ export default function TasksPage() {
 
     if (!selectedProject) return;
 
+    setIsMutating(true);
     try {
       const res = await fetch(`/api/projects/${selectedProject.id}/reward`, {
         method: "DELETE",
@@ -434,7 +454,7 @@ export default function TasksPage() {
 
       setDeleteRewardPassword("");
       setShowDeleteRewardModal(false);
-      fetchProjects();
+      await fetchProjects();
 
       const refreshed = await fetch(`/api/projects`);
       const allProjects = await refreshed.json();
@@ -445,6 +465,8 @@ export default function TasksPage() {
     } catch (error) {
       console.error("Error deleting reward: ", error);
       setDeleteRewardError("Something went wrong");
+    } finally {
+      setIsMutating(false);
     }
   };
 
@@ -529,11 +551,9 @@ export default function TasksPage() {
   const completedProjects = projects.filter((p) => p.status === "complete");
   const obsoleteProjects = projects.filter((p) => p.status === "obsolete");
 
-  if (loading) {
-    return <div className="loading">Loading projects...</div>;
-  }
-
   return (
+    <>
+      {isMutating && <MutationSpinner />}
     <DndContext
       sensors={sensors}
       collisionDetection={closestCorners}
@@ -1226,5 +1246,6 @@ export default function TasksPage() {
         )}
       </div>
     </DndContext>
+    </>
   );
 }

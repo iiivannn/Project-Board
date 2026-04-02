@@ -79,7 +79,7 @@ export default function Navigation() {
 
       {/* Navigation */}
       <nav className={`navigation ${isOpen ? "open" : ""}`}>
-        <div className="navigation-header">
+        <Link href="/dashboard/tasks" className="navigation-header" onClick={closeMenu}>
           <Image
             src="/project-board-logo.png"
             alt="Project Board Logo"
@@ -87,7 +87,7 @@ export default function Navigation() {
             height={32}
           />
           <h2 className={jakartaSans.className}>Project Board</h2>
-        </div>
+        </Link>
 
         <div className="navigation-tabs">
           <Link

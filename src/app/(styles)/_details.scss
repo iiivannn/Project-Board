@@ -451,6 +451,7 @@
   justify-content: center;
   z-index: 1000;
   padding: 20px;
+  overflow-y: auto;
 }
 
 .modal {
@@ -461,6 +462,10 @@
   max-width: 500px;
   width: 100%;
   box-shadow: var(--shadow-modal);
+
+  @media (max-width: 767px) {
+    padding: 20px;
+  }
 
   h2 {
     margin-bottom: 20px;
