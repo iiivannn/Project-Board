@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import PublicTopBar from "@/components/PublicTopBar";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState("");
@@ -59,7 +60,9 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="register-container">
+    <>
+      <PublicTopBar variant="register" />
+      <div className="register-container">
       <div className="register-card">
         <h1>Register for Project Board</h1>
 
@@ -105,6 +108,7 @@ export default function RegisterPage() {
           Already have an account? <Link href="/login">Login here</Link>
         </p>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

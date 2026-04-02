@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import PublicTopBar from "@/components/PublicTopBar";
 
 function LoginForm() {
   const [username, setUsername] = useState("");
@@ -100,5 +101,10 @@ function LoginForm() {
 }
 
 export default function LoginPage() {
-  return <LoginForm />;
+  return (
+    <>
+      <PublicTopBar variant="login" />
+      <LoginForm />
+    </>
+  );
 }

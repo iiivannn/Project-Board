@@ -54,7 +54,7 @@ export default function Navigation() {
 
   const handleLogout = async () => {
     await signOut({ redirect: false });
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   const closeMenu = () => {
@@ -79,7 +79,11 @@ export default function Navigation() {
 
       {/* Navigation */}
       <nav className={`navigation ${isOpen ? "open" : ""}`}>
-        <Link href="/dashboard/tasks" className="navigation-header" onClick={closeMenu}>
+        <Link
+          href="/dashboard/tasks"
+          className="navigation-header"
+          onClick={closeMenu}
+        >
           <Image
             src="/project-board-logo.png"
             alt="Project Board Logo"
