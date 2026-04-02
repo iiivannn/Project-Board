@@ -4,7 +4,6 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
-// POST - Add reward
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -27,7 +26,6 @@ export async function POST(
       );
     }
 
-    // Verify project belongs to user
     const project = await prisma.project.findUnique({
       where: { id: id },
       include: { reward: true },
@@ -41,7 +39,6 @@ export async function POST(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Check if project is completed
     // if (project.status !== "complete") {
     //   return NextResponse.json(
     //     { error: "Can only add rewards to completed projects" },
@@ -49,7 +46,6 @@ export async function POST(
     //   );
     // }
 
-    // Check if reward already exists
     if (project.reward) {
       return NextResponse.json(
         { error: "Project already has a reward" },
@@ -57,7 +53,6 @@ export async function POST(
       );
     }
 
-    // Create reward
     const reward = await prisma.reward.create({
       data: {
         description,
@@ -75,7 +70,6 @@ export async function POST(
   }
 }
 
-// PATCH - Edit reward (requires password verification)
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -105,7 +99,6 @@ export async function PATCH(
       );
     }
 
-    // Verify password
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
     });
@@ -120,7 +113,6 @@ export async function PATCH(
       return NextResponse.json({ error: "Invalid password" }, { status: 401 });
     }
 
-    // Verify project belongs to user
     const project = await prisma.project.findUnique({
       where: { id: id },
       include: { reward: true },
@@ -141,7 +133,6 @@ export async function PATCH(
       );
     }
 
-    // Update reward
     const updatedReward = await prisma.reward.update({
       where: { id: project.reward.id },
       data: { description },
@@ -157,7 +148,6 @@ export async function PATCH(
   }
 }
 
-// DELETE - Delete reward (requires password verification)
 export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -180,7 +170,6 @@ export async function DELETE(
       );
     }
 
-    // Verify password
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
     });
@@ -195,7 +184,6 @@ export async function DELETE(
       return NextResponse.json({ error: "Invalid password" }, { status: 401 });
     }
 
-    // Verify project belongs to user
     const project = await prisma.project.findUnique({
       where: { id: id },
       include: { reward: true },
@@ -216,7 +204,6 @@ export async function DELETE(
       );
     }
 
-    // Delete reward
     await prisma.reward.delete({
       where: { id: project.reward.id },
     });

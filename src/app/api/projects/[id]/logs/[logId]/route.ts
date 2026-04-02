@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 
-// PATCH - Update log
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string; logId: string }> },
@@ -26,7 +25,6 @@ export async function PATCH(
       );
     }
 
-    // Verify project belongs to user
     const project = await prisma.project.findUnique({
       where: { id: id },
     });
@@ -39,7 +37,6 @@ export async function PATCH(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Verify log belongs to project
     const log = await prisma.log.findUnique({
       where: { id: logId },
     });
@@ -48,7 +45,6 @@ export async function PATCH(
       return NextResponse.json({ error: "Log not found" }, { status: 404 });
     }
 
-    // Update log
     const updatedLog = await prisma.log.update({
       where: { id: logId },
       data: { content },
@@ -64,7 +60,6 @@ export async function PATCH(
   }
 }
 
-// DELETE - Delete log
 export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ id: string; logId: string }> },
@@ -78,7 +73,6 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Verify project belongs to user
     const project = await prisma.project.findUnique({
       where: { id: id },
     });
@@ -91,7 +85,6 @@ export async function DELETE(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Verify log belongs to project
     const log = await prisma.log.findUnique({
       where: { id: logId },
     });
@@ -100,7 +93,6 @@ export async function DELETE(
       return NextResponse.json({ error: "Log not found" }, { status: 404 });
     }
 
-    // Delete log
     await prisma.log.delete({
       where: { id: logId },
     });

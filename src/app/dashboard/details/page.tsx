@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import ProjectSelect from "@/components/ProjectSelect";
 
 type Project = {
   id: string;
@@ -30,13 +31,11 @@ export default function DetailsPage() {
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
-  // Project editing states
   const [editedTitle, setEditedTitle] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
   const [editedReward, setEditedReward] = useState("");
   const [hasChanges, setHasChanges] = useState(false);
 
-  // Password modal states
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -44,7 +43,6 @@ export default function DetailsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
 
-  // Log form states
   const [showAddLogForm, setShowAddLogForm] = useState(false);
   const [newLogContent, setNewLogContent] = useState("");
   const [editingLogId, setEditingLogId] = useState<string | null>(null);
@@ -64,7 +62,6 @@ export default function DetailsPage() {
     return projects.find((p) => p.id === selectedProjectId) || null;
   }, [projects, selectedProjectId]);
 
-  // Update edited values when project changes
   useEffect(() => {
     if (selectedProject) {
       setEditedTitle(selectedProject.title);
@@ -79,7 +76,6 @@ export default function DetailsPage() {
     }
   }, [selectedProject]);
 
-  // Check for changes
   useEffect(() => {
     if (!selectedProject) return;
 
@@ -119,7 +115,6 @@ export default function DetailsPage() {
     if (!selectedProject || !password) return;
 
     try {
-      // Update project title and description
       const projectRes = await fetch(`/api/projects/${selectedProject.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -136,18 +131,15 @@ export default function DetailsPage() {
         return;
       }
 
-      // Update or create reward if changed
       const originalReward = selectedProject.reward?.description || "";
       if (editedReward !== originalReward) {
         if (editedReward && !selectedProject.reward) {
-          // Create new reward
           await fetch(`/api/projects/${selectedProject.id}/reward`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ description: editedReward }),
           });
         } else if (editedReward && selectedProject.reward) {
-          // Update existing reward
           await fetch(`/api/projects/${selectedProject.id}/reward`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
@@ -157,7 +149,6 @@ export default function DetailsPage() {
             }),
           });
         } else if (!editedReward && selectedProject.reward) {
-          // Delete reward
           await fetch(`/api/projects/${selectedProject.id}/reward`, {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
@@ -166,7 +157,6 @@ export default function DetailsPage() {
         }
       }
 
-      // Success - refresh and close
       setPassword("");
       setShowPasswordModal(false);
       setHasChanges(false);
@@ -305,22 +295,21 @@ export default function DetailsPage() {
       <div className="project-selector">
         <div className="form-group">
           <label htmlFor="project-select">Select Project</label>
-          <select
+          <ProjectSelect
             id="project-select"
             value={selectedProjectId}
-            onChange={(e) => {
-              setSelectedProjectId(e.target.value);
+            options={projects.map((p) => ({
+              value: p.id,
+              label: p.title,
+              status: p.status,
+            }))}
+            onChange={(val) => {
+              setSelectedProjectId(val);
               setShowAddLogForm(false);
               setEditingLogId(null);
             }}
-          >
-            <option value="">-- Choose a project --</option>
-            {projects.map((project) => (
-              <option key={project.id} value={project.id}>
-                {project.title} ({formatStatus(project.status)})
-              </option>
-            ))}
-          </select>
+            placeholder="-- Choose a project --"
+          />
         </div>
       </div>
 

@@ -1,12 +1,9 @@
-// Mobile-First Navigation Styles
-
 .dashboard-layout {
   display: flex;
-  background-color: var(--bg-secondary);
+  background-color: var(--bg-primary);
   min-height: 100vh;
 }
 
-// Hamburger Button (Mobile Only)
 .hamburger {
   position: fixed;
   top: 18px;
@@ -15,7 +12,7 @@
   width: 40px;
   height: 40px;
   background-color: var(--nav-bg);
-  border: none;
+  border: 1px solid var(--nav-border);
   border-radius: 6px;
   cursor: pointer;
   display: flex;
@@ -24,14 +21,14 @@
   align-items: center;
   gap: 6px;
   padding: 8px;
-  transition: all 0.3s;
+  transition: all 0.2s;
 
   span {
     display: block;
     width: 24px;
     height: 2px;
     background-color: var(--nav-text);
-    transition: all 0.3s;
+    transition: all 0.2s;
     border-radius: 2px;
   }
 
@@ -54,20 +51,18 @@
     }
   }
 
-  // Hide on desktop
   @media (min-width: 1024px) {
     display: none;
   }
 }
 
-// Overlay (Mobile Only)
 .nav-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--modal-overlay);
   z-index: 999;
 
   @media (min-width: 1024px) {
@@ -75,11 +70,10 @@
   }
 }
 
-// Navigation Sidebar
 .navigation {
   position: fixed;
   top: 0;
-  left: -280px; // Hidden by default on mobile
+  left: -280px;
   width: 280px;
   height: 100vh;
   background-color: var(--nav-bg);
@@ -92,12 +86,10 @@
   transition: left 0.3s ease;
   overflow-y: auto;
 
-  // Slide in when open (Mobile)
   &.open {
     left: 0;
   }
 
-  // Desktop - Always visible
   @media (min-width: 1024px) {
     left: 0;
     position: fixed;
@@ -106,17 +98,18 @@
   .navigation-header {
     display: flex;
     align-items: center;
-    margin-bottom: 40px;
-    padding-bottom: 20px;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
     border-bottom: 1px solid var(--nav-border);
 
     img {
-      margin-right: 6px;
+      margin-right: 8px;
     }
 
     h2 {
-      font-size: 18px;
-      font-weight: 600;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
       color: var(--nav-text);
       margin: 0;
       width: max-content;
@@ -127,14 +120,15 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 4px;
 
     .tab {
-      padding: 12px 16px;
+      padding: 8px 12px;
       border-radius: 6px;
       text-decoration: none;
       color: var(--nav-text-inactive);
-      transition: all 0.3s;
+      transition: all 0.15s;
+      font-size: 14px;
       font-weight: 500;
 
       &:hover {
@@ -143,8 +137,9 @@
       }
 
       &.active {
-        background-color: var(--nav-active);
-        color: var(--nav-text);
+        background-color: rgba(76, 154, 255, 0.18);
+        color: var(--nav-active);
+        font-weight: 600;
       }
     }
   }
@@ -152,76 +147,80 @@
   .navigation-footer {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding-top: 20px;
+    gap: 8px;
+    padding-top: 16px;
     border-top: 1px solid var(--nav-border);
 
     .theme-buttons {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 6px;
 
       .theme-button {
-        padding: 10px 12px;
-        background-color: var(--nav-hover);
+        padding: 8px 10px;
+        background-color: transparent;
         color: var(--nav-text-inactive);
-        border: 1px solid transparent;
+        border: 1px solid var(--nav-border);
         border-radius: 6px;
         cursor: pointer;
+        font-size: 12px;
         font-weight: 500;
-        transition: all 0.3s;
+        transition: all 0.15s;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
+        gap: 6px;
 
         .theme-icon {
-          font-size: 16px;
+          font-size: 14px;
         }
 
         .theme-text {
-          font-size: 13px;
+          font-size: 12px;
         }
 
         &:hover {
-          background-color: var(--btn-secondary-hover);
+          background-color: var(--nav-hover);
           color: var(--nav-text);
+          border-color: var(--border-secondary);
         }
 
         &.active {
-          background-color: var(--nav-active);
-          color: var(--nav-text);
-          border-color: var(--nav-active);
+          background-color: rgba(76, 154, 255, 0.18);
+          color: var(--nav-active);
+          border-color: rgba(76, 154, 255, 0.4);
         }
       }
     }
 
     .logout-button {
       width: 100%;
-      padding: 12px;
-      background-color: var(--btn-danger-bg);
-      color: var(--btn-danger-text);
-      border: none;
+      padding: 8px 12px;
+      color: #ff8f73;
+      border: 1px solid rgba(255, 86, 48, 0.25);
       border-radius: 6px;
       cursor: pointer;
+      font-size: 14px;
       font-weight: 500;
-      transition: background-color 0.3s;
+      transition: all 0.15s;
+      text-align: center;
+      background-color: rgba(255, 86, 48, 0.1);
 
       &:hover {
-        background-color: var(--btn-danger-hover);
+        color: #ffffff;
+        background-color: #de350b;
+        border-color: #de350b;
       }
     }
   }
 }
 
-// Dashboard Content
 .dashboard-content {
   flex: 1;
-  padding: 80px 20px 20px; // Extra top padding for hamburger on mobile
-  background-color: var(--bg-secondary);
+  padding: 80px 20px 20px;
+  background-color: var(--bg-primary);
   min-height: 100vh;
 
-  // Desktop - Add left margin for sidebar
   @media (min-width: 1024px) {
     margin-left: 280px;
     padding: 40px;

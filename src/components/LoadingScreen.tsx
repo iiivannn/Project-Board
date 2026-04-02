@@ -12,9 +12,8 @@ export default function LoadingScreen({
   const animationFrameRef = useRef<number>(null);
 
   useEffect(() => {
-    const duration = 2000; // Total loading time in ms (2 seconds)
+    const duration = 2000;
 
-    // Initialize start time here instead of during render
     if (startTimeRef.current === null) {
       startTimeRef.current = performance.now();
     }
@@ -25,7 +24,6 @@ export default function LoadingScreen({
       const elapsed = performance.now() - startTime;
       const progressPercent = Math.min((elapsed / duration) * 100, 100);
 
-      // Easing function for smooth deceleration (ease-out)
       const easeOut = (t: number) => t * (2 - t);
 
       const easedProgress = easeOut(progressPercent / 100) * 100;
@@ -35,7 +33,6 @@ export default function LoadingScreen({
       if (progressPercent < 100) {
         animationFrameRef.current = requestAnimationFrame(animate);
       } else {
-        // Finished loading
         setTimeout(() => {
           onLoadComplete();
         }, 400);

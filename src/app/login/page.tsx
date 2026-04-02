@@ -39,7 +39,6 @@ function LoginForm() {
         return;
       }
 
-      // Login successful - redirect to dashboard
       window.location.href = "/dashboard/tasks";
     } catch (err) {
       setError("Something went wrong");
@@ -48,7 +47,6 @@ function LoginForm() {
     }
   };
 
-  // Show loading while checking session
   if (status === "loading") {
     return <div className="loading">Loading...</div>;
   }

@@ -20,7 +20,6 @@ export async function PATCH(
     const body = await req.json();
     const { title, description, status, password } = body;
 
-    // Verify project belongs to user
     const project = await prisma.project.findUnique({
       where: { id: id },
     });
@@ -33,9 +32,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // If title or description is being changed, require password
     if ((title !== undefined || description !== undefined) && password) {
-      // Verify password
       const user = await prisma.user.findUnique({
         where: { id: session.user.id },
       });
@@ -54,7 +51,6 @@ export async function PATCH(
       }
     }
 
-    // Build update data
     const updateData: {
       title?: string;
       description?: string;
@@ -65,7 +61,6 @@ export async function PATCH(
     if (description !== undefined) updateData.description = description;
     if (status !== undefined) updateData.status = status;
 
-    // Update project
     const updatedProject = await prisma.project.update({
       where: { id: id },
       data: updateData,

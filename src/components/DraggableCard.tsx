@@ -43,7 +43,6 @@ export default function DraggableCard({
       {...listeners}
       className={`project-card ${project.status} ${isDragging ? "dragging" : ""}`}
       onClick={() => {
-        // Only allow click if not dragging
         if (!isDragging) {
           onClick();
         }

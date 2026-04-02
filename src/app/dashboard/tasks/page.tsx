@@ -13,6 +13,7 @@ import {
   closestCorners,
 } from "@dnd-kit/core";
 import DroppableColumn from "../../../components/DroppableColumn";
+import ProjectSelect from "@/components/ProjectSelect";
 
 type Project = {
   id: string;
@@ -52,7 +53,6 @@ export default function TasksPage() {
   const [deletePassword, setDeletePassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  // Form states
   const [newProjectTitle, setNewProjectTitle] = useState("");
   const [newProjectDescription, setNewProjectDescription] = useState("");
   const [logContent, setLogContent] = useState("");
@@ -60,7 +60,6 @@ export default function TasksPage() {
   const [editingLogId, setEditingLogId] = useState<string | null>(null);
   const [editingLogContent, setEditingLogContent] = useState("");
 
-  // Reward editing states
   const [showRewardEditModal, setShowRewardEditModal] = useState(false);
   const [editRewardPassword, setEditRewardPassword] = useState("");
   const [editRewardDescription, setEditRewardDescription] = useState("");
@@ -69,7 +68,6 @@ export default function TasksPage() {
   const [deleteRewardPassword, setDeleteRewardPassword] = useState("");
   const [deleteRewardError, setDeleteRewardError] = useState("");
 
-  // For log modal with project selection
   const [selectedProjectIdForLog, setSelectedProjectIdForLog] = useState("");
 
   const formatStatus = (status: string): string => {
@@ -87,13 +85,13 @@ export default function TasksPage() {
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
-        distance: 8, // 8px movement required to start drag
+        distance: 8,
       },
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 200, // 200ms press delay for touch
-        tolerance: 5, // 5px movement tolerance
+        delay: 200,
+        tolerance: 5,
       },
     }),
   );
@@ -192,13 +190,10 @@ export default function TasksPage() {
     newStatus: string,
     previousStatus: string,
   ) => {
-    // 1. OPTIMISTIC UPDATE (Immediate UI change)
-    // Update the list
     setProjects((prev) =>
       prev.map((p) => (p.id === projectId ? { ...p, status: newStatus } : p)),
     );
 
-    // Update the modal (if open)
     if (selectedProject?.id === projectId) {
       setSelectedProject((prev) =>
         prev ? { ...prev, status: newStatus } : null,
@@ -216,7 +211,6 @@ export default function TasksPage() {
 
       const updatedProject = await res.json();
 
-      // 2. RECONCILE (Sync any other server-calculated fields like updatedAt)
       setProjects((prev) =>
         prev.map((p) => (p.id === projectId ? { ...p, ...updatedProject } : p)),
       );
@@ -227,7 +221,6 @@ export default function TasksPage() {
     } catch (error) {
       console.error("Error updating status:", error);
 
-      // 3. ROLLBACK (Only on failure)
       setProjects((prev) =>
         prev.map((p) =>
           p.id === projectId ? { ...p, status: previousStatus } : p,
@@ -262,7 +255,6 @@ export default function TasksPage() {
       if (res.ok) {
         setLogContent("");
 
-        // If in action mode, close modal
         if (modalMode === "addLog") {
           setShowProjectModal(false);
           setModalMode("view");
@@ -272,7 +264,6 @@ export default function TasksPage() {
         setSelectedProjectIdForLog("");
         fetchProjects();
 
-        // Refresh selected project if modal is open in view mode
         if (modalMode === "view" && selectedProject) {
           const refreshed = await fetch(`/api/projects`);
           const allProjects = await refreshed.json();
@@ -305,7 +296,6 @@ export default function TasksPage() {
         setEditingLogContent("");
         fetchProjects();
 
-        // Refresh modal
         const refreshed = await fetch(`/api/projects`);
         const allProjects = await refreshed.json();
         const updatedProject = allProjects.find(
@@ -333,7 +323,6 @@ export default function TasksPage() {
       if (res.ok) {
         fetchProjects();
 
-        // Refresh modal
         const refreshed = await fetch(`/api/projects`);
         const allProjects = await refreshed.json();
         const updatedProject = allProjects.find(
@@ -361,7 +350,6 @@ export default function TasksPage() {
       if (res.ok) {
         setRewardDescription("");
 
-        // If in action mode, close modal
         if (modalMode === "addReward") {
           setShowProjectModal(false);
           setModalMode("view");
@@ -370,7 +358,6 @@ export default function TasksPage() {
 
         fetchProjects();
 
-        // Refresh modal if in view mode
         if (modalMode === "view") {
           const refreshed = await fetch(`/api/projects`);
           const allProjects = await refreshed.json();
@@ -413,7 +400,6 @@ export default function TasksPage() {
       setShowRewardEditModal(false);
       fetchProjects();
 
-      // Refresh modal
       const refreshed = await fetch(`/api/projects`);
       const allProjects = await refreshed.json();
       const updatedProject = allProjects.find(
@@ -450,7 +436,6 @@ export default function TasksPage() {
       setShowDeleteRewardModal(false);
       fetchProjects();
 
-      // Refresh modal
       const refreshed = await fetch(`/api/projects`);
       const allProjects = await refreshed.json();
       const updatedProject = allProjects.find(
@@ -476,13 +461,11 @@ export default function TasksPage() {
     const projectsInStatus = projects.filter((p) => p.status === status);
 
     if (mode === "addProject") {
-      // For "Add Item" - start with no selection
       setSelectedProject(null);
       setSelectedProjectForAction("");
       setModalMode("addProject");
       setShowProjectModal(true);
     } else if (mode === "addLog") {
-      // For "Log Task" - preselect first in-progress project if exists
       if (projectsInStatus.length > 0) {
         setSelectedProject(projectsInStatus[0]);
         setSelectedProjectForAction(projectsInStatus[0].id);
@@ -490,7 +473,6 @@ export default function TasksPage() {
         setShowProjectModal(true);
       }
     } else if (mode === "addReward") {
-      // For "Add Reward" - find first project without reward
       const projectWithoutReward = projectsInStatus.find((p) => !p.reward);
       if (projectWithoutReward) {
         setSelectedProject(projectWithoutReward);
@@ -501,7 +483,6 @@ export default function TasksPage() {
     }
   };
 
-  // Drag and Drop Handlers
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
     const project = projects.find((p) => p.id === active.id);
@@ -517,24 +498,19 @@ export default function TasksPage() {
     const projectId = active.id as string;
     const overId = over.id as string;
 
-    // Find the current project state
     const project = projects.find((p) => p.id === projectId);
     if (!project) return;
 
-    // Determine the new status
     const overProject = projects.find((p) => p.id === overId);
     const newStatus = overProject ? overProject.status : overId;
 
-    // FIX: Use the correct status values from database
     const validStatuses = ["todo", "inprogress", "complete", "obsolete"];
     if (!validStatuses.includes(newStatus) || project.status === newStatus) {
       return;
     }
 
-    // Store the old status for potential rollback
     const previousStatus = project.status;
 
-    // Update UI optimistically
     setProjects((prevProjects) =>
       prevProjects.map((p) =>
         p.id === projectId ? { ...p, status: newStatus } : p,
@@ -545,7 +521,6 @@ export default function TasksPage() {
       setSelectedProject({ ...selectedProject, status: newStatus });
     }
 
-    // Trigger API call with rollback capability
     handleStatusChange(projectId, newStatus, previousStatus);
   };
 
@@ -730,27 +705,27 @@ export default function TasksPage() {
                     <h3>Select Project</h3>
                     <div className="form-group">
                       <label htmlFor="log-project-select">Project</label>
-                      <select
+                      <ProjectSelect
                         id="log-project-select"
                         value={selectedProjectForAction}
-                        onChange={(e) => {
-                          const value = e.target.value;
+                        options={inProgressProjects.map((p) => ({
+                          value: p.id,
+                          label: p.title,
+                          status: p.status,
+                        }))}
+                        placeholder="-- Select a project --"
+                        onChange={(value) => {
                           if (value) {
                             const proj = projects.find((p) => p.id === value);
                             if (proj) {
                               setSelectedProject(proj);
                               setSelectedProjectForAction(value);
                             }
+                          } else {
+                            setSelectedProjectForAction("");
                           }
                         }}
-                      >
-                        <option value="">-- Select a project --</option>
-                        {inProgressProjects.map((project) => (
-                          <option key={project.id} value={project.id}>
-                            {project.title}
-                          </option>
-                        ))}
-                      </select>
+                      />
                     </div>
 
                     {selectedProject && (
@@ -776,29 +751,29 @@ export default function TasksPage() {
                     <h3>Select Project</h3>
                     <div className="form-group">
                       <label htmlFor="reward-project-select">Project</label>
-                      <select
+                      <ProjectSelect
                         id="reward-project-select"
                         value={selectedProjectForAction}
-                        onChange={(e) => {
-                          const value = e.target.value;
+                        options={completedProjects
+                          .filter((p) => !p.reward)
+                          .map((p) => ({
+                            value: p.id,
+                            label: p.title,
+                            status: p.status,
+                          }))}
+                        placeholder="-- Select a project --"
+                        onChange={(value) => {
                           if (value) {
                             const proj = projects.find((p) => p.id === value);
                             if (proj) {
                               setSelectedProject(proj);
                               setSelectedProjectForAction(value);
                             }
+                          } else {
+                            setSelectedProjectForAction("");
                           }
                         }}
-                      >
-                        <option value="">-- Select a project --</option>
-                        {completedProjects
-                          .filter((p) => !p.reward)
-                          .map((project) => (
-                            <option key={project.id} value={project.id}>
-                              {project.title}
-                            </option>
-                          ))}
-                      </select>
+                      />
                     </div>
 
                     {selectedProject && (

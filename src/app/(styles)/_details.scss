@@ -1,23 +1,19 @@
 .details-page {
   h1 {
-    margin-bottom: 30px;
-    font-size: 32px;
+    margin-bottom: 24px;
+    font-size: 24px;
+    font-weight: 700;
     color: var(--text-primary);
-
-    @media (min-width: 768px) {
-      font-size: 32px;
-    }
   }
 }
 
-// Project Selector
 .project-selector {
   margin-bottom: 30px;
   background: var(--card-bg);
   border: 1px solid var(--border-primary);
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 2px 8px var(--card-shadow);
+  box-shadow: var(--shadow-card);
 
   .form-group {
     margin-bottom: 0;
@@ -51,25 +47,27 @@
 }
 
 .details-section {
-  margin-bottom: 40px;
+  margin-bottom: 32px;
 
   h2 {
-    font-size: 24px;
-    color: var(--text-primary);
-    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 16px;
     padding-bottom: 10px;
-    border-bottom: 2px solid var(--border-primary);
+    border-bottom: 1px solid var(--border-primary);
   }
 }
 
-// Empty State
 .empty-state {
   text-align: center;
   padding: 60px 20px;
   background: var(--card-bg);
   border: 1px solid var(--border-primary);
   border-radius: 8px;
-  box-shadow: 0 2px 8px var(--card-shadow);
+  box-shadow: var(--shadow-card);
 
   p {
     font-size: 16px;
@@ -77,12 +75,11 @@
   }
 }
 
-// Project Details Table
 .project-details-table {
   background: var(--card-bg);
   border: 1px solid var(--border-primary);
   border-radius: 8px;
-  box-shadow: 0 2px 8px var(--card-shadow);
+  box-shadow: var(--shadow-card);
   overflow: hidden;
 
   .details-grid {
@@ -151,10 +148,10 @@
 
         .status-badge {
           display: inline-block;
-          padding: 6px 16px;
-          border-radius: 16px;
-          font-size: 13px;
-          font-weight: 500;
+          padding: 3px 8px;
+          border-radius: 4px;
+          font-size: 11px;
+          font-weight: 600;
           width: fit-content;
 
           &.status-todo {
@@ -235,7 +232,6 @@
   }
 }
 
-// Logs Controls
 .logs-controls {
   margin-bottom: 20px;
 
@@ -256,7 +252,6 @@
   }
 }
 
-// Add Log Form
 .add-log-form {
   background: var(--card-bg);
   border: 1px solid var(--border-primary);
@@ -311,7 +306,6 @@
   }
 }
 
-// Logs List & Table
 .logs-list {
   margin-top: 20px;
 }
@@ -320,6 +314,7 @@
   background: var(--card-bg);
   border: 1px solid var(--border-primary);
   border-radius: 8px;
+  box-shadow: var(--shadow-card);
   overflow: hidden;
 
   .log-row {
@@ -444,7 +439,6 @@
   }
 }
 
-// Modal Styles (reuse from tasks)
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -461,15 +455,17 @@
 
 .modal {
   background: var(--card-bg);
+  border: 1px solid var(--border-primary);
   border-radius: 8px;
   padding: 30px;
   max-width: 500px;
   width: 100%;
-  box-shadow: 0 10px 40px var(--card-shadow);
+  box-shadow: var(--shadow-modal);
 
   h2 {
     margin-bottom: 20px;
-    font-size: 22px;
+    font-size: 18px;
+    font-weight: 700;
     color: var(--text-primary);
   }
 
@@ -568,7 +564,7 @@
   transition: all 0.3s;
   background-color: var(--error-bg);
   color: var(--btn-primary-text);
-  margin-left: auto; // Push to the right
+  margin-left: auto;
 
   &:hover {
     background-color: var(--btn-danger-bg);

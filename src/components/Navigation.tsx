@@ -5,6 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
+import { Plus_Jakarta_Sans } from "next/font/google";
+
+const jakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["700"],
+  display: "swap",
+});
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -79,7 +86,7 @@ export default function Navigation() {
             width={32}
             height={32}
           />
-          <h2>Project Board</h2>
+          <h2 className={jakartaSans.className}>Project Board</h2>
         </div>
 
         <div className="navigation-tabs">

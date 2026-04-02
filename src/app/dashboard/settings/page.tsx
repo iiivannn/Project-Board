@@ -44,7 +44,6 @@ export default function SettingsPage() {
       setUsername(newUsername);
       setLoadingUsername(false);
 
-      // Clear success message after 3 seconds
       setTimeout(() => setUsernameSuccess(""), 3000);
     } catch (error) {
       setUsernameError("Something went wrong");
@@ -88,7 +87,6 @@ export default function SettingsPage() {
       setConfirmPassword("");
       setLoadingPassword(false);
 
-      // Clear success message after 3 seconds
       setTimeout(() => setPasswordSuccess(""), 3000);
     } catch (error) {
       setPasswordError("Something went wrong");

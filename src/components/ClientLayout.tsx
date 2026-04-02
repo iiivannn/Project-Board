@@ -3,13 +3,12 @@
 import { useState, useSyncExternalStore } from "react";
 import LoadingScreen from "@/components/LoadingScreen";
 
-// Helper to detect if we are on the server or client
 const emptySubscribe = () => () => {};
 function useIsClient() {
   return useSyncExternalStore(
     emptySubscribe,
-    () => true, // Client result
-    () => false, // Server (initial) result
+    () => true,
+    () => false,
   );
 }
 

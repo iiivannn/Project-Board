@@ -14,7 +14,6 @@ export default function RegisterPage() {
   const router = useRouter();
   const { status } = useSession();
 
-  // Redirect if already logged in
   useEffect(() => {
     if (status === "authenticated") {
       router.push("/dashboard/tasks");
@@ -47,7 +46,6 @@ export default function RegisterPage() {
         return;
       }
 
-      // Registration successful, redirect to login
       window.location.href = "/login?registered=true";
     } catch (err) {
       setError("Something went wrong");
@@ -56,7 +54,6 @@ export default function RegisterPage() {
     }
   };
 
-  // Show loading while checking session
   if (status === "loading") {
     return <div className="loading">Loading...</div>;
   }
