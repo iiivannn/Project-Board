@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import PublicTopBar from "@/components/PublicTopBar";
 
 export default function RegisterPage() {
@@ -63,51 +62,51 @@ export default function RegisterPage() {
     <>
       <PublicTopBar variant="register" />
       <div className="register-container">
-      <div className="register-card">
-        <h1>Register for Project Board</h1>
+        <div className="register-card">
+          <h1>Register for Project Board</h1>
 
-        <form onSubmit={handleSubmit} className="register-form">
-          <div className="form-group">
-            <label>Username</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="register-form">
+            <div className="form-group">
+              <label>Username</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
 
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+            <div className="form-group">
+              <label>Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
 
-          <div className="form-group">
-            <label>Confirm Password</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-          </div>
+            <div className="form-group">
+              <label>Confirm Password</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
 
-          {error && <div className="register-error">{error}</div>}
+            {error && <div className="register-error">{error}</div>}
 
-          <button type="submit" disabled={loading} className="register-button">
-            {loading ? "Creating account..." : "Register"}
-          </button>
-        </form>
-
-        <p className="register-footer">
-          Already have an account? <Link href="/login">Login here</Link>
-        </p>
-      </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="register-button"
+            >
+              {loading ? "Creating account..." : "Register"}
+            </button>
+          </form>
+        </div>
       </div>
     </>
   );

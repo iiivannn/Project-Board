@@ -97,10 +97,6 @@
         border-bottom: none;
       }
 
-      &:hover {
-        background-color: var(--bg-hover);
-      }
-
       .detail-label {
         padding: 20px;
         background-color: var(--bg-tertiary);
@@ -334,10 +330,6 @@
       border-bottom: none;
     }
 
-    &:hover {
-      background-color: var(--bg-hover);
-    }
-
     .log-content {
       flex: 1;
       margin-right: 15px;
@@ -401,20 +393,20 @@
       }
 
       .btn-edit {
-        background-color: var(--info-bg);
+        background-color: var(--btn-primary-bg);
         color: var(--btn-primary-text);
 
         &:hover {
-          opacity: 0.8;
+          background-color: var(--btn-primary-hover);
         }
       }
 
       .btn-delete {
-        background-color: var(--error-bg);
-        color: var(--btn-primary-text);
+        background-color: var(--btn-danger-bg);
+        color: var(--btn-danger-text);
 
         &:hover {
-          opacity: 0.8;
+          background-color: var(--btn-danger-hover);
         }
       }
 
@@ -423,7 +415,7 @@
         color: var(--success-text);
 
         &:hover {
-          opacity: 0.8;
+          background-color: var(--success-bg-hover);
         }
       }
 
@@ -538,7 +530,7 @@
       font-weight: 500;
       transition: all 0.3s;
 
-      &[type="button"] {
+      &[type="button"]:not(.btn-danger-action) {
         background-color: var(--btn-secondary-bg);
         color: var(--btn-secondary-text);
 
@@ -547,7 +539,7 @@
         }
       }
 
-      &[type="submit"] {
+      &[type="submit"]:not(.btn-danger-action) {
         background-color: var(--btn-primary-bg);
         color: var(--btn-primary-text);
 
@@ -567,13 +559,12 @@
   font-size: 14px;
   font-weight: 500;
   transition: all 0.3s;
-  background-color: var(--error-bg);
-  color: var(--btn-primary-text);
+  background-color: var(--btn-danger-bg);
+  color: var(--btn-danger-text);
   margin-left: auto;
 
   &:hover {
-    background-color: var(--btn-danger-bg);
-    color: var(--btn-danger-text);
+    background-color: var(--btn-danger-hover);
   }
 
   @media (max-width: 767px) {

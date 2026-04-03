@@ -71,6 +71,8 @@ export default function TasksPage() {
 
   const [selectedProjectIdForLog, setSelectedProjectIdForLog] = useState("");
   const [isMutating, setIsMutating] = useState(false);
+  const [showDeleteLogModal, setShowDeleteLogModal] = useState(false);
+  const [logToDelete, setLogToDelete] = useState<string | null>(null);
 
   const formatStatus = (status: string): string => {
     const statusMap: { [key: string]: string } = {
@@ -149,8 +151,6 @@ export default function TasksPage() {
   };
 
   const handleDeleteProject = async () => {
-    if (!confirm("Are you sure you want to delete this project?")) return;
-
     setShowDeleteModal(true);
   };
 
@@ -318,14 +318,20 @@ export default function TasksPage() {
     }
   };
 
-  const handleDeleteLog = async (logId: string) => {
+  const handleDeleteLog = (logId: string) => {
     if (!selectedProject) return;
-    if (!confirm("Are you sure you want to delete this log?")) return;
+    setLogToDelete(logId);
+    setShowDeleteLogModal(true);
+  };
+
+  const confirmDeleteLog = async () => {
+    if (!selectedProject || !logToDelete) return;
 
     setIsMutating(true);
+    setShowDeleteLogModal(false);
     try {
       const res = await fetch(
-        `/api/projects/${selectedProject.id}/logs/${logId}`,
+        `/api/projects/${selectedProject.id}/logs/${logToDelete}`,
         {
           method: "DELETE",
         },
@@ -345,6 +351,7 @@ export default function TasksPage() {
       console.error("Error deleting log: ", error);
     } finally {
       setIsMutating(false);
+      setLogToDelete(null);
     }
   };
 
@@ -554,353 +561,247 @@ export default function TasksPage() {
   return (
     <>
       {isMutating && <MutationSpinner />}
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCorners}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="tasks-page">
-        <h1>Project Tasks</h1>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="tasks-page">
+          <h1>Project Tasks</h1>
 
-        <div className="columns-container">
-          {/* TO DO COLUMN */}
-          <DroppableColumn
-            id="todo"
-            title="To Do"
-            projects={toDoProjects}
-            onCardClick={handleCardClick}
-            headerButton={
-              <button
-                type="button"
-                className="add-button"
-                onClick={() => handleColumnButtonClick("addProject", "todo")}
-              >
-                + Add Item
-              </button>
-            }
-          />
-
-          {/* IN PROGRESS COLUMN */}
-          <DroppableColumn
-            id="inprogress"
-            title="In Progress"
-            projects={inProgressProjects}
-            onCardClick={handleCardClick}
-            headerButton={
-              <button
-                type="button"
-                className="add-button"
-                onClick={() => handleColumnButtonClick("addLog", "inprogress")}
-                disabled={inProgressProjects.length === 0}
-              >
-                + Log Task
-              </button>
-            }
-          />
-
-          {/* COMPLETE COLUMN */}
-          <DroppableColumn
-            id="complete"
-            title="Complete"
-            projects={completedProjects}
-            onCardClick={handleCardClick}
-            headerButton={
-              <button
-                type="button"
-                className="add-button"
-                onClick={() => handleColumnButtonClick("addReward", "complete")}
-                disabled={!completedProjects.some((p) => !p.reward)}
-              >
-                + Add Reward
-              </button>
-            }
-          />
-
-          {/* OBSOLETE COLUMN */}
-          <DroppableColumn
-            id="obsolete"
-            title="Obsolete"
-            projects={obsoleteProjects}
-            onCardClick={handleCardClick}
-          />
-        </div>
-
-        <DragOverlay>
-          {activeProject ? (
-            <div className="project-card dragging">
-              <h3>{activeProject.title}</h3>
-              <p>{activeProject.description}</p>
-            </div>
-          ) : null}
-        </DragOverlay>
-
-        {/* PROJECT DETAILS MODAL */}
-        {showProjectModal && (
-          <div
-            className="modal-overlay"
-            onClick={() => {
-              setShowProjectModal(false);
-              setModalMode("view");
-              setSelectedProjectForAction("");
-            }}
-          >
-            <div
-              className="modal modal-large"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="modal-header">
-                <div>
-                  {modalMode === "view" && selectedProject && (
-                    <>
-                      <h2>{selectedProject.title}</h2>
-                      <p className="project-description">
-                        {selectedProject.description}
-                      </p>
-                    </>
-                  )}
-                  {modalMode === "addProject" && <h2>Add New Project</h2>}
-                  {modalMode === "addLog" && <h2>Add Task Log</h2>}
-                  {modalMode === "addReward" && <h2>Add Reward</h2>}
-                </div>
+          <div className="columns-container">
+            <DroppableColumn
+              id="todo"
+              title="To Do"
+              projects={toDoProjects}
+              onCardClick={handleCardClick}
+              headerButton={
                 <button
-                  className="close-button"
-                  onClick={() => {
-                    setShowProjectModal(false);
-                    setModalMode("view");
-                    setSelectedProjectForAction("");
-                  }}
+                  type="button"
+                  className="add-button"
+                  onClick={() => handleColumnButtonClick("addProject", "todo")}
                 >
-                  ✕
+                  + Add Item
                 </button>
+              }
+            />
+
+            <DroppableColumn
+              id="inprogress"
+              title="In Progress"
+              projects={inProgressProjects}
+              onCardClick={handleCardClick}
+              headerButton={
+                <button
+                  type="button"
+                  className="add-button"
+                  onClick={() =>
+                    handleColumnButtonClick("addLog", "inprogress")
+                  }
+                  disabled={inProgressProjects.length === 0}
+                >
+                  + Log Task
+                </button>
+              }
+            />
+
+            <DroppableColumn
+              id="complete"
+              title="Complete"
+              projects={completedProjects}
+              onCardClick={handleCardClick}
+              headerButton={
+                <button
+                  type="button"
+                  className="add-button"
+                  onClick={() =>
+                    handleColumnButtonClick("addReward", "complete")
+                  }
+                  disabled={!completedProjects.some((p) => !p.reward)}
+                >
+                  + Add Reward
+                </button>
+              }
+            />
+
+            <DroppableColumn
+              id="obsolete"
+              title="Obsolete"
+              projects={obsoleteProjects}
+              onCardClick={handleCardClick}
+            />
+          </div>
+
+          <DragOverlay>
+            {activeProject ? (
+              <div className="project-card dragging">
+                <h3>{activeProject.title}</h3>
+                <p>{activeProject.description}</p>
               </div>
+            ) : null}
+          </DragOverlay>
 
-              <div className="modal-body">
-                {/* ADD PROJECT MODE */}
-                {modalMode === "addProject" && (
-                  <div className="section">
-                    <form onSubmit={handleAddProject}>
-                      <div className="form-group">
-                        <label htmlFor="project-title">Title</label>
-                        <input
-                          id="project-title"
-                          type="text"
-                          value={newProjectTitle}
-                          onChange={(e) => setNewProjectTitle(e.target.value)}
-                          required
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="project-description">Description</label>
-                        <textarea
-                          id="project-description"
-                          value={newProjectDescription}
-                          onChange={(e) =>
-                            setNewProjectDescription(e.target.value)
-                          }
-                          rows={4}
-                        />
-                      </div>
-
-                      <div className="modal-actions">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setShowProjectModal(false);
-                            setModalMode("view");
-                            setSelectedProjectForAction("");
-                          }}
-                        >
-                          Cancel
-                        </button>
-                        <button type="submit">Add Project</button>
-                      </div>
-                    </form>
-                  </div>
-                )}
-
-                {/* ADD LOG MODE */}
-                {modalMode === "addLog" && (
-                  <div className="section">
-                    <h3>Select Project</h3>
-                    <div className="form-group">
-                      <label htmlFor="log-project-select">Project</label>
-                      <ProjectSelect
-                        id="log-project-select"
-                        value={selectedProjectForAction}
-                        options={inProgressProjects.map((p) => ({
-                          value: p.id,
-                          label: p.title,
-                          status: p.status,
-                        }))}
-                        placeholder="-- Select a project --"
-                        onChange={(value) => {
-                          if (value) {
-                            const proj = projects.find((p) => p.id === value);
-                            if (proj) {
-                              setSelectedProject(proj);
-                              setSelectedProjectForAction(value);
-                            }
-                          } else {
-                            setSelectedProjectForAction("");
-                          }
-                        }}
-                      />
-                    </div>
-
-                    {selectedProject && (
-                      <form onSubmit={handleAddLog} className="inline-form">
-                        <textarea
-                          value={logContent}
-                          onChange={(e) => setLogContent(e.target.value)}
-                          placeholder="What did you work on?"
-                          rows={3}
-                          required
-                        />
-                        <button type="submit" className="btn-primary">
-                          Add Log
-                        </button>
-                      </form>
+          {showProjectModal && (
+            <div
+              className="modal-overlay"
+              onClick={() => {
+                setShowProjectModal(false);
+                setModalMode("view");
+                setSelectedProjectForAction("");
+              }}
+            >
+              <div
+                className="modal modal-large"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="modal-header">
+                  <div>
+                    {modalMode === "view" && selectedProject && (
+                      <>
+                        <h2>{selectedProject.title}</h2>
+                        <p className="project-description">
+                          {selectedProject.description}
+                        </p>
+                      </>
                     )}
+                    {modalMode === "addProject" && <h2>Add New Project</h2>}
+                    {modalMode === "addLog" && <h2>Add Task Log</h2>}
+                    {modalMode === "addReward" && <h2>Add Reward</h2>}
                   </div>
-                )}
+                  <button
+                    className="close-button"
+                    onClick={() => {
+                      setShowProjectModal(false);
+                      setModalMode("view");
+                      setSelectedProjectForAction("");
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
 
-                {/* ADD REWARD MODE */}
-                {modalMode === "addReward" && (
-                  <div className="section">
-                    <h3>Select Project</h3>
-                    <div className="form-group">
-                      <label htmlFor="reward-project-select">Project</label>
-                      <ProjectSelect
-                        id="reward-project-select"
-                        value={selectedProjectForAction}
-                        options={completedProjects
-                          .filter((p) => !p.reward)
-                          .map((p) => ({
+                <div className="modal-body">
+                  {modalMode === "addProject" && (
+                    <div className="section">
+                      <form onSubmit={handleAddProject}>
+                        <div className="form-group">
+                          <label htmlFor="project-title">Title</label>
+                          <input
+                            id="project-title"
+                            type="text"
+                            value={newProjectTitle}
+                            onChange={(e) => setNewProjectTitle(e.target.value)}
+                            required
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label htmlFor="project-description">
+                            Description
+                          </label>
+                          <textarea
+                            id="project-description"
+                            value={newProjectDescription}
+                            onChange={(e) =>
+                              setNewProjectDescription(e.target.value)
+                            }
+                            rows={4}
+                          />
+                        </div>
+
+                        <div className="modal-actions">
+                          <button type="submit">Add Project</button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowProjectModal(false);
+                              setModalMode("view");
+                              setSelectedProjectForAction("");
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  )}
+
+                  {modalMode === "addLog" && (
+                    <div className="section">
+                      <h3>Select Project</h3>
+                      <div className="form-group">
+                        <label htmlFor="log-project-select">Project</label>
+                        <ProjectSelect
+                          id="log-project-select"
+                          value={selectedProjectForAction}
+                          options={inProgressProjects.map((p) => ({
                             value: p.id,
                             label: p.title,
                             status: p.status,
                           }))}
-                        placeholder="-- Select a project --"
-                        onChange={(value) => {
-                          if (value) {
-                            const proj = projects.find((p) => p.id === value);
-                            if (proj) {
-                              setSelectedProject(proj);
-                              setSelectedProjectForAction(value);
+                          placeholder="-- Select a project --"
+                          onChange={(value) => {
+                            if (value) {
+                              const proj = projects.find((p) => p.id === value);
+                              if (proj) {
+                                setSelectedProject(proj);
+                                setSelectedProjectForAction(value);
+                              }
+                            } else {
+                              setSelectedProjectForAction("");
                             }
-                          } else {
-                            setSelectedProjectForAction("");
-                          }
-                        }}
-                      />
-                    </div>
-
-                    {selectedProject && (
-                      <form onSubmit={handleAddReward} className="inline-form">
-                        <input
-                          type="text"
-                          value={rewardDescription}
-                          onChange={(e) => setRewardDescription(e.target.value)}
-                          placeholder="Enter reward description..."
-                          required
+                          }}
                         />
-                        <button type="submit" className="btn-primary">
-                          Add Reward
-                        </button>
-                      </form>
-                    )}
-                  </div>
-                )}
+                      </div>
 
-                {/* VIEW MODE - ORIGINAL MODAL CONTENT */}
-                {modalMode === "view" && selectedProject && (
-                  <>
-                    {/* Project Info */}
-                    <div className="project-info">
-                      <div className="info-row">
-                        <strong>Status:</strong>
-                        <span
-                          className={`status-badge status-${selectedProject.status}`}
-                        >
-                          {formatStatus(selectedProject.status)}
-                        </span>
-                      </div>
-                      <div className="info-row">
-                        <strong>Created:</strong>
-                        <span>
-                          {new Date(selectedProject.createdAt).toLocaleString()}
-                        </span>
-                      </div>
-                      {selectedProject.status === "complete" && (
-                        <div className="info-row">
-                          <strong>Completed:</strong>
-                          <span>
-                            {new Date(
-                              selectedProject.updatedAt,
-                            ).toLocaleString()}
-                          </span>
-                        </div>
+                      {selectedProject && (
+                        <form onSubmit={handleAddLog} className="inline-form">
+                          <textarea
+                            value={logContent}
+                            onChange={(e) => setLogContent(e.target.value)}
+                            placeholder="What did you work on?"
+                            rows={3}
+                            required
+                          />
+                          <button type="submit" className="btn-primary">
+                            Add Log
+                          </button>
+                        </form>
                       )}
                     </div>
+                  )}
 
-                    {/* Add Log Section */}
+                  {modalMode === "addReward" && (
                     <div className="section">
-                      <h3>Add Task Log</h3>
-                      <form onSubmit={handleAddLog} className="inline-form">
-                        <textarea
-                          value={logContent}
-                          onChange={(e) => setLogContent(e.target.value)}
-                          placeholder="What did you work on?"
-                          rows={3}
-                          required
+                      <h3>Select Project</h3>
+                      <div className="form-group">
+                        <label htmlFor="reward-project-select">Project</label>
+                        <ProjectSelect
+                          id="reward-project-select"
+                          value={selectedProjectForAction}
+                          options={completedProjects
+                            .filter((p) => !p.reward)
+                            .map((p) => ({
+                              value: p.id,
+                              label: p.title,
+                              status: p.status,
+                            }))}
+                          placeholder="-- Select a project --"
+                          onChange={(value) => {
+                            if (value) {
+                              const proj = projects.find((p) => p.id === value);
+                              if (proj) {
+                                setSelectedProject(proj);
+                                setSelectedProjectForAction(value);
+                              }
+                            } else {
+                              setSelectedProjectForAction("");
+                            }
+                          }}
                         />
-                        <button type="submit" className="btn-primary">
-                          Add Log
-                        </button>
-                      </form>
-                    </div>
+                      </div>
 
-                    {/* Add/View Reward Section */}
-                    <div className="section">
-                      <h3>Reward</h3>
-                      {selectedProject.reward ? (
-                        <div className="reward-display">
-                          <div className="reward-content">
-                            <span className="reward-icon">🎁</span>
-                            <div>
-                              <p>{selectedProject.reward.description}</p>
-                              <small>
-                                Added on{" "}
-                                {new Date(
-                                  selectedProject.reward.createdAt,
-                                ).toLocaleDateString()}
-                              </small>
-                            </div>
-                          </div>
-                          <div className="reward-actions">
-                            <button
-                              type="button"
-                              className="btn-edit-reward"
-                              onClick={() => {
-                                setEditRewardDescription(
-                                  selectedProject.reward!.description,
-                                );
-                                setShowRewardEditModal(true);
-                              }}
-                            >
-                              Edit Reward
-                            </button>
-                            <button
-                              type="button"
-                              className="btn-delete-reward"
-                              onClick={() => setShowDeleteRewardModal(true)}
-                            >
-                              Delete Reward
-                            </button>
-                          </div>
-                        </div>
-                      ) : selectedProject.status === "complete" ? (
+                      {selectedProject && (
                         <form
                           onSubmit={handleAddReward}
                           className="inline-form"
@@ -918,334 +819,472 @@ export default function TasksPage() {
                             Add Reward
                           </button>
                         </form>
-                      ) : (
-                        <p className="disabled-text">
-                          Complete this project to add a reward
-                        </p>
                       )}
                     </div>
+                  )}
 
-                    {/* Logs Table */}
-                    <div className="section">
-                      <h3>Task Logs ({selectedProject.logs.length})</h3>
-                      {selectedProject.logs.length === 0 ? (
-                        <p className="empty-text">No logs yet</p>
-                      ) : (
-                        <div className="logs-table">
-                          {selectedProject.logs.map((log) => (
-                            <div key={log.id} className="log-row">
-                              <div className="log-content">
-                                {editingLogId === log.id ? (
-                                  <textarea
-                                    value={editingLogContent}
-                                    onChange={(e) =>
-                                      setEditingLogContent(e.target.value)
-                                    }
-                                    rows={2}
-                                    autoFocus
-                                  />
-                                ) : (
-                                  <p>{log.content}</p>
-                                )}
+                  {modalMode === "view" && selectedProject && (
+                    <>
+                      <div className="project-info">
+                        <div className="info-row">
+                          <strong>Status:</strong>
+                          <span
+                            className={`status-badge status-${selectedProject.status}`}
+                          >
+                            {formatStatus(selectedProject.status)}
+                          </span>
+                        </div>
+                        <div className="info-row">
+                          <strong>Created:</strong>
+                          <span>
+                            {new Date(
+                              selectedProject.createdAt,
+                            ).toLocaleString()}
+                          </span>
+                        </div>
+                        {selectedProject.status === "complete" && (
+                          <div className="info-row">
+                            <strong>Completed:</strong>
+                            <span>
+                              {new Date(
+                                selectedProject.updatedAt,
+                              ).toLocaleString()}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="section">
+                        <h3>Add Task Log</h3>
+                        <form onSubmit={handleAddLog} className="inline-form">
+                          <textarea
+                            value={logContent}
+                            onChange={(e) => setLogContent(e.target.value)}
+                            placeholder="What did you work on?"
+                            rows={3}
+                            required
+                          />
+                          <button type="submit" className="btn-primary">
+                            Add Log
+                          </button>
+                        </form>
+                      </div>
+
+                      <div className="section">
+                        <h3>Reward</h3>
+                        {selectedProject.reward ? (
+                          <div className="reward-display">
+                            <div className="reward-content">
+                              <span className="reward-icon">🎁</span>
+                              <div>
+                                <p>{selectedProject.reward.description}</p>
                                 <small>
-                                  {new Date(log.createdAt).toLocaleString()}
+                                  Added on{" "}
+                                  {new Date(
+                                    selectedProject.reward.createdAt,
+                                  ).toLocaleDateString()}
                                 </small>
                               </div>
-                              <div className="log-actions">
-                                {editingLogId === log.id ? (
-                                  <>
-                                    <button
-                                      onClick={() => handleUpdateLog(log.id)}
-                                      className="btn-save"
-                                    >
-                                      Save
-                                    </button>
-                                    <button
-                                      onClick={() => {
-                                        setEditingLogId(null);
-                                        setEditingLogContent("");
-                                      }}
-                                      className="btn-cancel"
-                                    >
-                                      Cancel
-                                    </button>
-                                  </>
-                                ) : (
-                                  <>
-                                    <button
-                                      onClick={() => {
-                                        setEditingLogId(log.id);
-                                        setEditingLogContent(log.content);
-                                      }}
-                                      className="btn-edit"
-                                    >
-                                      Edit
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeleteLog(log.id)}
-                                      className="btn-delete"
-                                    >
-                                      Delete
-                                    </button>
-                                  </>
-                                )}
-                              </div>
                             </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Status Actions */}
-                    <div className="section">
-                      <h3>Actions</h3>
-                      <div className="status-actions">
-                        {selectedProject.status === "todo" && (
-                          <button
-                            onClick={() =>
-                              handleStatusChange(
-                                selectedProject.id,
-                                "inprogress",
-                                selectedProject.status,
-                              )
-                            }
-                            className="btn-status"
+                            <div className="reward-actions">
+                              <button
+                                type="button"
+                                className="btn-edit-reward"
+                                onClick={() => {
+                                  setEditRewardDescription(
+                                    selectedProject.reward!.description,
+                                  );
+                                  setShowRewardEditModal(true);
+                                }}
+                              >
+                                Edit Reward
+                              </button>
+                              <button
+                                type="button"
+                                className="btn-delete-reward"
+                                onClick={() => setShowDeleteRewardModal(true)}
+                              >
+                                Delete Reward
+                              </button>
+                            </div>
+                          </div>
+                        ) : selectedProject.status === "complete" ? (
+                          <form
+                            onSubmit={handleAddReward}
+                            className="inline-form"
                           >
-                            Start Project
-                          </button>
+                            <input
+                              type="text"
+                              value={rewardDescription}
+                              onChange={(e) =>
+                                setRewardDescription(e.target.value)
+                              }
+                              placeholder="Enter reward description..."
+                              required
+                            />
+                            <button type="submit" className="btn-primary">
+                              Add Reward
+                            </button>
+                          </form>
+                        ) : (
+                          <p className="disabled-text">
+                            Complete this project to add a reward
+                          </p>
                         )}
-                        {selectedProject.status === "inprogress" && (
-                          <>
+                      </div>
+
+                      <div className="section">
+                        <h3>Task Logs ({selectedProject.logs.length})</h3>
+                        {selectedProject.logs.length === 0 ? (
+                          <p className="empty-text">No logs yet</p>
+                        ) : (
+                          <div className="logs-table">
+                            {selectedProject.logs.map((log) => (
+                              <div key={log.id} className="log-row">
+                                <div className="log-content">
+                                  {editingLogId === log.id ? (
+                                    <textarea
+                                      value={editingLogContent}
+                                      onChange={(e) =>
+                                        setEditingLogContent(e.target.value)
+                                      }
+                                      rows={2}
+                                      autoFocus
+                                    />
+                                  ) : (
+                                    <p>{log.content}</p>
+                                  )}
+                                  <small>
+                                    {new Date(log.createdAt).toLocaleString()}
+                                  </small>
+                                </div>
+                                <div className="log-actions">
+                                  {editingLogId === log.id ? (
+                                    <>
+                                      <button
+                                        onClick={() => handleUpdateLog(log.id)}
+                                        className="btn-save"
+                                      >
+                                        Save
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          setEditingLogId(null);
+                                          setEditingLogContent("");
+                                        }}
+                                        className="btn-cancel"
+                                      >
+                                        Cancel
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <button
+                                        onClick={() => {
+                                          setEditingLogId(log.id);
+                                          setEditingLogContent(log.content);
+                                        }}
+                                        className="btn-edit"
+                                      >
+                                        Edit
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteLog(log.id)}
+                                        className="btn-delete"
+                                      >
+                                        Delete
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="section">
+                        <h3>Actions</h3>
+                        <div className="status-actions">
+                          {selectedProject.status === "todo" && (
                             <button
                               onClick={() =>
                                 handleStatusChange(
                                   selectedProject.id,
-                                  "complete",
+                                  "inprogress",
                                   selectedProject.status,
                                 )
                               }
                               className="btn-status"
                             >
-                              Mark Complete
+                              Start Project
                             </button>
+                          )}
+                          {selectedProject.status === "inprogress" && (
+                            <>
+                              <button
+                                onClick={() =>
+                                  handleStatusChange(
+                                    selectedProject.id,
+                                    "complete",
+                                    selectedProject.status,
+                                  )
+                                }
+                                className="btn-status"
+                              >
+                                Mark Complete
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleStatusChange(
+                                    selectedProject.id,
+                                    "obsolete",
+                                    selectedProject.status,
+                                  )
+                                }
+                                className="btn-status btn-warning"
+                              >
+                                Mark Obsolete
+                              </button>
+                            </>
+                          )}
+                          {selectedProject.status === "complete" && (
                             <button
                               onClick={() =>
                                 handleStatusChange(
                                   selectedProject.id,
-                                  "obsolete",
+                                  "inprogress",
                                   selectedProject.status,
                                 )
                               }
-                              className="btn-status btn-warning"
+                              className="btn-status"
                             >
-                              Mark Obsolete
+                              Move to In Progress
                             </button>
-                          </>
-                        )}
-                        {selectedProject.status === "complete" && (
+                          )}
                           <button
-                            onClick={() =>
-                              handleStatusChange(
-                                selectedProject.id,
-                                "inprogress",
-                                selectedProject.status,
-                              )
-                            }
-                            className="btn-status"
+                            onClick={() => handleDeleteProject()}
+                            className="btn-status btn-danger"
                           >
-                            Move to In Progress
+                            Delete Project
                           </button>
-                        )}
-                        <button
-                          onClick={() => handleDeleteProject()}
-                          className="btn-status btn-danger"
-                        >
-                          Delete Project
-                        </button>
+                        </div>
                       </div>
-                    </div>
-                  </>
-                )}
+                    </>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* EDIT REWARD MODAL */}
-        {showRewardEditModal && selectedProject && (
-          <div
-            className="modal-overlay"
-            onClick={() => {
-              setShowRewardEditModal(false);
-              setRewardEditError("");
-              setEditRewardPassword("");
-            }}
-          >
-            <div className="modal" onClick={(e) => e.stopPropagation()}>
-              <h2>Edit Reward</h2>
-              <p className="modal-info">
-                Enter your password to confirm editing the reward for{" "}
-                <strong>{selectedProject.title}</strong>
-              </p>
-              <form onSubmit={handleEditReward}>
-                <div className="form-group">
-                  <label htmlFor="edit-reward-description">
-                    Reward Description
-                  </label>
-                  <input
-                    id="edit-reward-description"
-                    type="text"
-                    value={editRewardDescription}
-                    onChange={(e) => setEditRewardDescription(e.target.value)}
-                    placeholder="Enter new reward description..."
-                    required
-                  />
-                </div>
+          {showRewardEditModal && selectedProject && (
+            <div
+              className="modal-overlay"
+              onClick={() => {
+                setShowRewardEditModal(false);
+                setRewardEditError("");
+                setEditRewardPassword("");
+              }}
+            >
+              <div className="modal" onClick={(e) => e.stopPropagation()}>
+                <h2>Edit Reward</h2>
+                <p className="modal-info">
+                  Enter your password to confirm editing the reward for{" "}
+                  <strong>{selectedProject.title}</strong>
+                </p>
+                <form onSubmit={handleEditReward}>
+                  <div className="form-group">
+                    <label htmlFor="edit-reward-description">
+                      Reward Description
+                    </label>
+                    <input
+                      id="edit-reward-description"
+                      type="text"
+                      value={editRewardDescription}
+                      onChange={(e) => setEditRewardDescription(e.target.value)}
+                      placeholder="Enter new reward description..."
+                      required
+                    />
+                  </div>
 
-                <div className="form-group">
-                  <label htmlFor="edit-reward-password">Password</label>
-                  <input
-                    id="edit-reward-password"
-                    type="password"
-                    value={editRewardPassword}
-                    onChange={(e) => setEditRewardPassword(e.target.value)}
-                    placeholder="Enter your password..."
-                    required
-                  />
-                </div>
+                  <div className="form-group">
+                    <label htmlFor="edit-reward-password">Password</label>
+                    <input
+                      id="edit-reward-password"
+                      type="password"
+                      value={editRewardPassword}
+                      onChange={(e) => setEditRewardPassword(e.target.value)}
+                      placeholder="Enter your password..."
+                      required
+                    />
+                  </div>
 
-                {rewardEditError && (
-                  <div className="error-message">{rewardEditError}</div>
-                )}
+                  {rewardEditError && (
+                    <div className="error-message">{rewardEditError}</div>
+                  )}
 
+                  <div className="modal-actions">
+                    <button type="submit">Update Reward</button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowRewardEditModal(false);
+                        setRewardEditError("");
+                        setEditRewardPassword("");
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {showDeleteRewardModal && selectedProject && (
+            <div
+              className="modal-overlay"
+              onClick={() => {
+                setShowDeleteRewardModal(false);
+                setDeleteRewardError("");
+                setDeleteRewardPassword("");
+              }}
+            >
+              <div className="modal" onClick={(e) => e.stopPropagation()}>
+                <h2>Delete Reward</h2>
+                <p className="modal-info modal-warning">
+                  Are you sure you want to delete the reward for{" "}
+                  <strong>{selectedProject.title}</strong>? This action cannot
+                  be undone.
+                </p>
+                <form onSubmit={handleDeleteReward}>
+                  <div className="form-group">
+                    <label htmlFor="delete-reward-password">Password</label>
+                    <input
+                      id="delete-reward-password"
+                      type="password"
+                      value={deleteRewardPassword}
+                      onChange={(e) => setDeleteRewardPassword(e.target.value)}
+                      placeholder="Enter your password to confirm..."
+                      required
+                    />
+                  </div>
+
+                  {deleteRewardError && (
+                    <div className="error-message">{deleteRewardError}</div>
+                  )}
+
+                  <div className="modal-actions">
+                    <button type="submit" className="btn-danger-action">
+                      Delete Reward
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowDeleteRewardModal(false);
+                        setDeleteRewardError("");
+                        setDeleteRewardPassword("");
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {showDeleteLogModal && (
+            <div
+              className="modal-overlay"
+              onClick={() => {
+                setShowDeleteLogModal(false);
+                setLogToDelete(null);
+              }}
+            >
+              <div className="modal" onClick={(e) => e.stopPropagation()}>
+                <h2>Delete Log</h2>
+                <p className="modal-info modal-warning">
+                  Are you sure you want to delete this log? This action cannot
+                  be undone.
+                </p>
                 <div className="modal-actions">
                   <button
                     type="button"
+                    className="btn-danger-action"
+                    onClick={confirmDeleteLog}
+                  >
+                    Delete Log
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => {
-                      setShowRewardEditModal(false);
-                      setRewardEditError("");
-                      setEditRewardPassword("");
+                      setShowDeleteLogModal(false);
+                      setLogToDelete(null);
                     }}
                   >
                     Cancel
                   </button>
-                  <button type="submit">Update Reward</button>
                 </div>
-              </form>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* DELETE REWARD MODAL */}
-        {showDeleteRewardModal && selectedProject && (
-          <div
-            className="modal-overlay"
-            onClick={() => {
-              setShowDeleteRewardModal(false);
-              setDeleteRewardError("");
-              setDeleteRewardPassword("");
-            }}
-          >
-            <div className="modal" onClick={(e) => e.stopPropagation()}>
-              <h2>Delete Reward</h2>
-              <p className="modal-info modal-warning">
-                Are you sure you want to delete the reward for{" "}
-                <strong>{selectedProject.title}</strong>? This action cannot be
-                undone.
-              </p>
-              <form onSubmit={handleDeleteReward}>
-                <div className="form-group">
-                  <label htmlFor="delete-reward-password">Password</label>
-                  <input
-                    id="delete-reward-password"
-                    type="password"
-                    value={deleteRewardPassword}
-                    onChange={(e) => setDeleteRewardPassword(e.target.value)}
-                    placeholder="Enter your password to confirm..."
-                    required
-                  />
-                </div>
+          {showDeleteModal && selectedProject && (
+            <div
+              className="modal-overlay"
+              onClick={() => {
+                setShowDeleteModal(false);
+                setDeletePassword("");
+                setPasswordError("");
+              }}
+            >
+              <div className="modal" onClick={(e) => e.stopPropagation()}>
+                <h2>Delete Project</h2>
+                <p className="modal-info modal-warning">
+                  You are about to permanently delete{" "}
+                  <strong>{selectedProject.title}</strong>. This will also
+                  delete all logs and rewards associated with this project. This
+                  action cannot be undone.
+                </p>
+                <form onSubmit={handleConfirmDelete}>
+                  <div className="form-group">
+                    <label htmlFor="delete-password">Password</label>
+                    <input
+                      id="delete-password"
+                      type="password"
+                      value={deletePassword}
+                      onChange={(e) => setDeletePassword(e.target.value)}
+                      placeholder="Enter your password to confirm..."
+                      required
+                    />
+                  </div>
 
-                {deleteRewardError && (
-                  <div className="error-message">{deleteRewardError}</div>
-                )}
+                  {passwordError && (
+                    <div className="error-message">{passwordError}</div>
+                  )}
 
-                <div className="modal-actions">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowDeleteRewardModal(false);
-                      setDeleteRewardError("");
-                      setDeleteRewardPassword("");
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" className="btn-danger-action">
-                    Delete Reward
-                  </button>
-                </div>
-              </form>
+                  <div className="modal-actions">
+                    <button type="submit" className="btn-danger-action">
+                      Delete Project
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowDeleteModal(false);
+                        setDeletePassword("");
+                        setPasswordError("");
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
-          </div>
-        )}
-
-        {/* DELETE PROJECT CONFIRMATION MODAL */}
-        {showDeleteModal && selectedProject && (
-          <div
-            className="modal-overlay"
-            onClick={() => {
-              setShowDeleteModal(false);
-              setDeletePassword("");
-              setPasswordError("");
-            }}
-          >
-            <div className="modal" onClick={(e) => e.stopPropagation()}>
-              <h2>Delete Project</h2>
-              <p className="modal-info modal-warning">
-                You are about to permanently delete{" "}
-                <strong>{selectedProject.title}</strong>. This will also delete
-                all logs and rewards associated with this project. This action
-                cannot be undone.
-              </p>
-              <form onSubmit={handleConfirmDelete}>
-                <div className="form-group">
-                  <label htmlFor="delete-password">Password</label>
-                  <input
-                    id="delete-password"
-                    type="password"
-                    value={deletePassword}
-                    onChange={(e) => setDeletePassword(e.target.value)}
-                    placeholder="Enter your password to confirm..."
-                    required
-                  />
-                </div>
-
-                {passwordError && (
-                  <div className="error-message">{passwordError}</div>
-                )}
-
-                <div className="modal-actions">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowDeleteModal(false);
-                      setDeletePassword("");
-                      setPasswordError("");
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" className="btn-danger-action">
-                    Delete Project
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-      </div>
-    </DndContext>
+          )}
+        </div>
+      </DndContext>
     </>
   );
 }

@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
-import Link from "next/link";
 import PublicTopBar from "@/components/PublicTopBar";
 
 function LoginForm() {
@@ -90,11 +89,6 @@ function LoginForm() {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-
-        <p className="login-footer">
-          Don&apos;t have an account?{" "}
-          <Link href="/register">Register here</Link>
-        </p>
       </div>
     </div>
   );

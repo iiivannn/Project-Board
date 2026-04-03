@@ -27,15 +27,17 @@
   --nav-active: #fff;
   --nav-border: rgba(255, 255, 255, 0.15);
 
-  --success-bg: #e3fcef;
+  --success-bg: #b8f5d8;
+  --success-bg-hover: #8ee8b6;
   --success-text: #006644;
   --success-border: #57d9a3;
 
-  --error-bg: #ffebe6;
+  --error-bg: #ffd2cc;
   --error-text: #bf2600;
   --error-border: #ff5630;
 
-  --warning-bg: #fffae6;
+  --warning-bg: #fff0b3;
+  --warning-bg-hover: #ffdf80;
   --warning-text: #172b4d;
   --warning-border: #ffc400;
 
@@ -56,7 +58,7 @@
   --btn-danger-text: #ffffff;
 
   --btn-disabled-bg: #f4f5f7;
-  --btn-disabled-text: #b3bac5;
+  --btn-disabled-text: #8993a4;
 
   --card-complete-border: #00875a;
   --card-complete-bg: #e3fcef;
@@ -100,12 +102,13 @@
 
   --nav-bg: #161a1d;
   --nav-text: #c7d1db;
-  --nav-text-inactive: #6b778c;
+  --nav-text-inactive: #8fa3b3;
   --nav-hover: rgba(199, 209, 219, 0.08);
   --nav-active: #fff;
   --nav-border: #2c333a;
 
   --success-bg: #1c3329;
+  --success-bg-hover: #26473c;
   --success-text: #7ee2b8;
   --success-border: #216e4e;
 
@@ -113,7 +116,8 @@
   --error-text: #ff8f73;
   --error-border: #ae2e24;
 
-  --warning-bg: #332500;
+  --warning-bg: #4d3800;
+  --warning-bg-hover: #664a00;
   --warning-text: #ffd666;
   --warning-border: #7f5f01;
 
@@ -134,7 +138,7 @@
   --btn-danger-text: #ffffff;
 
   --btn-disabled-bg: #22272b;
-  --btn-disabled-text: #4c5b67;
+  --btn-disabled-text: #6b7f8e;
 
   --card-complete-border: #216e4e;
   --card-complete-bg: #1c3329;

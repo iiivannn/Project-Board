@@ -39,13 +39,6 @@ export async function POST(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // if (project.status !== "complete") {
-    //   return NextResponse.json(
-    //     { error: "Can only add rewards to completed projects" },
-    //     { status: 400 },
-    //   );
-    // }
-
     if (project.reward) {
       return NextResponse.json(
         { error: "Project already has a reward" },

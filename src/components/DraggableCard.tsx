@@ -1,5 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import Image from "next/image";
 
 type Project = {
   id: string;
@@ -51,14 +52,21 @@ export default function DraggableCard({
       <h3>{project.title}</h3>
       <p>{project.description}</p>
 
-      {/* Show log count if there are logs */}
       {project.logs.length > 0 && (
         <span className="log-count">{project.logs.length} log(s)</span>
       )}
 
-      {/* Show reward badge if exists */}
       {project.reward && (
-        <span className="reward-badge">🎁 {project.reward.description}</span>
+        <span className="reward-badge">
+          <Image
+            src="/gift.png"
+            alt="Gift Icon"
+            width={16}
+            height={16}
+            className="reward-badge-icon"
+          />
+          {project.reward.description}
+        </span>
       )}
     </div>
   );

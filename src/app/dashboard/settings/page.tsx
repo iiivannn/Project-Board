@@ -119,7 +119,6 @@ export default function SettingsPage() {
       <h1>Settings</h1>
 
       <div className="settings-container">
-        {/* Username Section */}
         <div className="settings-card">
           <h2>Change Username</h2>
           <form onSubmit={handleUsernameChange}>
@@ -160,7 +159,6 @@ export default function SettingsPage() {
           </form>
         </div>
 
-        {/* Password Section */}
         <div className="settings-card">
           <h2>Change Password</h2>
           <form onSubmit={handlePasswordChange}>
@@ -211,7 +209,6 @@ export default function SettingsPage() {
           </form>
         </div>
 
-        {/* Logout Section */}
         <div className="settings-card danger-card">
           <h2>Logout</h2>
           <p>Sign out of your account</p>

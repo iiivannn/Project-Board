@@ -160,14 +160,22 @@
   }
 
   .reward-badge {
-    display: inline-block;
     background-color: var(--reward-bg);
     color: var(--reward-text);
-    padding: 4px 10px;
+    padding: 4px 10px 4px 0;
     border-radius: 4px;
     font-size: 12px;
     font-weight: 500;
     margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .reward-badge-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
   }
 
   &.complete {
@@ -268,7 +276,7 @@
       font-weight: 500;
       transition: all 0.3s;
 
-      &[type="button"] {
+      &[type="button"]:not(.btn-danger-action) {
         background-color: var(--btn-secondary-bg);
         color: var(--btn-secondary-text);
 
@@ -277,7 +285,7 @@
         }
       }
 
-      &[type="submit"] {
+      &[type="submit"]:not(.btn-danger-action) {
         background-color: var(--btn-primary-bg);
         color: var(--btn-primary-text);
 
@@ -561,10 +569,6 @@
       border-bottom: none;
     }
 
-    &:hover {
-      background-color: var(--bg-hover);
-    }
-
     .log-content {
       flex: 1;
       margin-right: 15px;
@@ -625,20 +629,20 @@
       }
 
       .btn-edit {
-        background-color: var(--info-bg);
-        color: var(--info-text);
+        background-color: var(--btn-primary-bg);
+        color: var(--btn-primary-text);
 
         &:hover {
-          opacity: 0.8;
+          background-color: var(--btn-primary-hover);
         }
       }
 
       .btn-delete {
-        background-color: var(--error-bg);
-        color: var(--error-text);
+        background-color: var(--btn-danger-bg);
+        color: var(--btn-danger-text);
 
         &:hover {
-          opacity: 0.8;
+          background-color: var(--btn-danger-hover);
         }
       }
 
@@ -647,7 +651,7 @@
         color: var(--success-text);
 
         &:hover {
-          opacity: 0.8;
+          background-color: var(--success-bg-hover);
         }
       }
 
@@ -688,7 +692,7 @@
       color: var(--warning-text);
 
       &:hover {
-        opacity: 0.8;
+        background-color: var(--warning-bg-hover);
       }
     }
 

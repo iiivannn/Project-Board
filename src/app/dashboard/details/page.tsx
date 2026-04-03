@@ -43,6 +43,8 @@ export default function DetailsPage() {
   const [deletePassword, setDeletePassword] = useState("");
 
   const [isMutating, setIsMutating] = useState(false);
+  const [showDeleteLogModal, setShowDeleteLogModal] = useState(false);
+  const [logToDelete, setLogToDelete] = useState<string | null>(null);
   const [showAddLogForm, setShowAddLogForm] = useState(false);
   const [newLogContent, setNewLogContent] = useState("");
   const [editingLogId, setEditingLogId] = useState<string | null>(null);
@@ -180,14 +182,6 @@ export default function DetailsPage() {
   const handleDeleteProject = () => {
     if (!selectedProject) return;
 
-    if (
-      !confirm(
-        `Are you sure you want to delete "${selectedProject.title}"? This action is irreversible.`,
-      )
-    ) {
-      return;
-    }
-
     setShowDeleteModal(true);
   };
 
@@ -273,14 +267,20 @@ export default function DetailsPage() {
     }
   };
 
-  const handleDeleteLog = async (logId: string) => {
+  const handleDeleteLog = (logId: string) => {
     if (!selectedProjectId) return;
-    if (!confirm("Are you sure you want to delete this log?")) return;
+    setLogToDelete(logId);
+    setShowDeleteLogModal(true);
+  };
+
+  const confirmDeleteLog = async () => {
+    if (!selectedProjectId || !logToDelete) return;
 
     setIsMutating(true);
+    setShowDeleteLogModal(false);
     try {
       const res = await fetch(
-        `/api/projects/${selectedProjectId}/logs/${logId}`,
+        `/api/projects/${selectedProjectId}/logs/${logToDelete}`,
         {
           method: "DELETE",
         },
@@ -293,6 +293,7 @@ export default function DetailsPage() {
       console.error("Error deleting log:", error);
     } finally {
       setIsMutating(false);
+      setLogToDelete(null);
     }
   };
 
@@ -300,330 +301,357 @@ export default function DetailsPage() {
     <>
       {isMutating && <MutationSpinner />}
       <div className="details-page">
-      <h1>Project Details</h1>
+        <h1>Project Details</h1>
 
-      {/* PROJECT SELECTOR */}
-      <div className="project-selector">
-        <div className="form-group">
-          <label htmlFor="project-select">Select Project</label>
-          <ProjectSelect
-            id="project-select"
-            value={selectedProjectId}
-            options={projects.map((p) => ({
-              value: p.id,
-              label: p.title,
-              status: p.status,
-            }))}
-            onChange={(val) => {
-              setSelectedProjectId(val);
-              setShowAddLogForm(false);
-              setEditingLogId(null);
-            }}
-            placeholder="-- Choose a project --"
-          />
-        </div>
-      </div>
-
-      {/* PROJECT DETAILS TABLE */}
-      <section className="details-section">
-        <h2>Project Information</h2>
-
-        {!selectedProject ? (
-          <div className="empty-state">
-            <p>No project selected</p>
+        <div className="project-selector">
+          <div className="form-group">
+            <label htmlFor="project-select">Select Project</label>
+            <ProjectSelect
+              id="project-select"
+              value={selectedProjectId}
+              options={projects.map((p) => ({
+                value: p.id,
+                label: p.title,
+                status: p.status,
+              }))}
+              onChange={(val) => {
+                setSelectedProjectId(val);
+                setShowAddLogForm(false);
+                setEditingLogId(null);
+              }}
+              placeholder="-- Choose a project --"
+            />
           </div>
-        ) : (
-          <div className="project-details-table">
-            <div className="details-grid">
-              {/* Title & Description */}
-              <div className="detail-row">
-                <div className="detail-label">Title & Description</div>
-                <div className="detail-value">
-                  <input
-                    type="text"
-                    value={editedTitle}
-                    onChange={(e) => setEditedTitle(e.target.value)}
-                    placeholder="Project title..."
-                  />
+        </div>
+
+        <section className="details-section">
+          <h2>Project Information</h2>
+
+          {!selectedProject ? (
+            <div className="empty-state">
+              <p>No project selected</p>
+            </div>
+          ) : (
+            <div className="project-details-table">
+              <div className="details-grid">
+                <div className="detail-row">
+                  <div className="detail-label">Title & Description</div>
+                  <div className="detail-value">
+                    <input
+                      type="text"
+                      value={editedTitle}
+                      onChange={(e) => setEditedTitle(e.target.value)}
+                      placeholder="Project title..."
+                    />
+                    <textarea
+                      value={editedDescription}
+                      onChange={(e) => setEditedDescription(e.target.value)}
+                      placeholder="Project description..."
+                      rows={3}
+                    />
+                  </div>
+                </div>
+
+                <div className="detail-row">
+                  <div className="detail-label">Status</div>
+                  <div className="detail-value">
+                    <span
+                      className={`status-badge status-${selectedProject.status}`}
+                    >
+                      {formatStatus(selectedProject.status)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="detail-row">
+                  <div className="detail-label">Reward</div>
+                  <div className="detail-value">
+                    <input
+                      type="text"
+                      value={editedReward}
+                      onChange={(e) => setEditedReward(e.target.value)}
+                      placeholder="Reward description..."
+                    />
+                  </div>
+                </div>
+
+                <div className="detail-row">
+                  <div className="detail-label">Actions</div>
+                  <div className="detail-value detail-actions">
+                    <button
+                      onClick={handleSaveChanges}
+                      className="btn-save"
+                      disabled={!hasChanges}
+                    >
+                      Save Changes
+                    </button>
+                    <button
+                      onClick={handleCancelChanges}
+                      className="btn-cancel"
+                      disabled={!hasChanges}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleDeleteProject}
+                      className="btn-delete-project"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
+
+        <section className="details-section">
+          <h2>Project Logs</h2>
+
+          {!selectedProject ? (
+            <div className="empty-state">
+              <p>No project selected</p>
+            </div>
+          ) : (
+            <>
+              <div className="logs-controls">
+                <button
+                  className="add-log-button"
+                  onClick={() => setShowAddLogForm(!showAddLogForm)}
+                >
+                  {showAddLogForm ? "Cancel" : "+ Add Log"}
+                </button>
+              </div>
+
+              {showAddLogForm && (
+                <form onSubmit={handleAddLog} className="add-log-form">
                   <textarea
-                    value={editedDescription}
-                    onChange={(e) => setEditedDescription(e.target.value)}
-                    placeholder="Project description..."
+                    value={newLogContent}
+                    onChange={(e) => setNewLogContent(e.target.value)}
+                    placeholder="Enter log content..."
                     rows={3}
+                    required
                   />
-                </div>
-              </div>
-
-              {/* Status (Read-only) */}
-              <div className="detail-row">
-                <div className="detail-label">Status</div>
-                <div className="detail-value">
-                  <span
-                    className={`status-badge status-${selectedProject.status}`}
-                  >
-                    {formatStatus(selectedProject.status)}
-                  </span>
-                </div>
-              </div>
-
-              {/* Reward */}
-              <div className="detail-row">
-                <div className="detail-label">Reward</div>
-                <div className="detail-value">
-                  <input
-                    type="text"
-                    value={editedReward}
-                    onChange={(e) => setEditedReward(e.target.value)}
-                    placeholder="Reward description..."
-                  />
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="detail-row">
-                <div className="detail-label">Actions</div>
-                <div className="detail-value detail-actions">
-                  <button
-                    onClick={handleSaveChanges}
-                    className="btn-save"
-                    disabled={!hasChanges}
-                  >
-                    Save Changes
+                  <button type="submit" className="btn-primary">
+                    Add Log
                   </button>
+                </form>
+              )}
+
+              <div className="logs-list">
+                {selectedProject.logs.length === 0 ? (
+                  <div className="empty-state">
+                    <p>No logs for this project yet.</p>
+                  </div>
+                ) : (
+                  <div className="logs-table">
+                    {selectedProject.logs.map((log) => (
+                      <div key={log.id} className="log-row">
+                        <div className="log-content">
+                          {editingLogId === log.id ? (
+                            <textarea
+                              value={editingLogContent}
+                              onChange={(e) =>
+                                setEditingLogContent(e.target.value)
+                              }
+                              rows={2}
+                              autoFocus
+                            />
+                          ) : (
+                            <p>{log.content}</p>
+                          )}
+                          <small>
+                            {new Date(log.createdAt).toLocaleString()}
+                          </small>
+                        </div>
+                        <div className="log-actions">
+                          {editingLogId === log.id ? (
+                            <>
+                              <button
+                                onClick={() => handleUpdateLog(log.id)}
+                                className="btn-save"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEditingLogId(null);
+                                  setEditingLogContent("");
+                                }}
+                                className="btn-cancel"
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => {
+                                  setEditingLogId(log.id);
+                                  setEditingLogContent(log.content);
+                                }}
+                                className="btn-edit"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDeleteLog(log.id)}
+                                className="btn-delete"
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </section>
+
+        {showDeleteLogModal && (
+          <div
+            className="modal-overlay"
+            onClick={() => {
+              setShowDeleteLogModal(false);
+              setLogToDelete(null);
+            }}
+          >
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <h2>Delete Log</h2>
+              <p className="modal-info modal-warning">
+                Are you sure you want to delete this log? This action cannot be
+                undone.
+              </p>
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="btn-danger-action"
+                  onClick={confirmDeleteLog}
+                >
+                  Delete Log
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowDeleteLogModal(false);
+                    setLogToDelete(null);
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showPasswordModal && (
+          <div
+            className="modal-overlay"
+            onClick={() => {
+              setShowPasswordModal(false);
+              setPassword("");
+              setPasswordError("");
+            }}
+          >
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <h2>Confirm Changes</h2>
+              <p className="modal-info">
+                Enter your password to confirm changes to{" "}
+                <strong>{selectedProject?.title}</strong>
+              </p>
+              <form onSubmit={handleConfirmSave}>
+                <div className="form-group">
+                  <label htmlFor="password">Password</label>
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password..."
+                    required
+                  />
+                </div>
+
+                {passwordError && (
+                  <div className="error-message">{passwordError}</div>
+                )}
+
+                <div className="modal-actions">
+                  <button type="submit">Confirm</button>
                   <button
-                    onClick={handleCancelChanges}
-                    className="btn-cancel"
-                    disabled={!hasChanges}
+                    type="button"
+                    onClick={() => {
+                      setShowPasswordModal(false);
+                      setPassword("");
+                      setPasswordError("");
+                    }}
                   >
                     Cancel
                   </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {showDeleteModal && selectedProject && (
+          <div
+            className="modal-overlay"
+            onClick={() => {
+              setShowDeleteModal(false);
+              setDeletePassword("");
+              setPasswordError("");
+            }}
+          >
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <h2>Delete Project</h2>
+              <p className="modal-info modal-warning">
+                You are about to permanently delete{" "}
+                <strong>{selectedProject.title}</strong>. This will also delete
+                all logs and rewards associated with this project. This action
+                cannot be undone.
+              </p>
+              <form onSubmit={handleConfirmDelete}>
+                <div className="form-group">
+                  <label htmlFor="delete-password">Password</label>
+                  <input
+                    id="delete-password"
+                    type="password"
+                    value={deletePassword}
+                    onChange={(e) => setDeletePassword(e.target.value)}
+                    placeholder="Enter your password to confirm..."
+                    required
+                  />
+                </div>
+
+                {passwordError && (
+                  <div className="error-message">{passwordError}</div>
+                )}
+
+                <div className="modal-actions">
+                  <button type="submit" className="btn-danger-action">
+                    Delete Project
+                  </button>
                   <button
-                    onClick={handleDeleteProject}
-                    className="btn-delete-project"
+                    type="button"
+                    onClick={() => {
+                      setShowDeleteModal(false);
+                      setDeletePassword("");
+                      setPasswordError("");
+                    }}
                   >
-                    Delete
+                    Cancel
                   </button>
                 </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </section>
-
-      {/* PROJECT LOGS TABLE */}
-      <section className="details-section">
-        <h2>Project Logs</h2>
-
-        {!selectedProject ? (
-          <div className="empty-state">
-            <p>No project selected</p>
-          </div>
-        ) : (
-          <>
-            <div className="logs-controls">
-              <button
-                className="add-log-button"
-                onClick={() => setShowAddLogForm(!showAddLogForm)}
-              >
-                {showAddLogForm ? "Cancel" : "+ Add Log"}
-              </button>
-            </div>
-
-            {showAddLogForm && (
-              <form onSubmit={handleAddLog} className="add-log-form">
-                <textarea
-                  value={newLogContent}
-                  onChange={(e) => setNewLogContent(e.target.value)}
-                  placeholder="Enter log content..."
-                  rows={3}
-                  required
-                />
-                <button type="submit" className="btn-primary">
-                  Add Log
-                </button>
               </form>
-            )}
-
-            <div className="logs-list">
-              {selectedProject.logs.length === 0 ? (
-                <div className="empty-state">
-                  <p>No logs for this project yet.</p>
-                </div>
-              ) : (
-                <div className="logs-table">
-                  {selectedProject.logs.map((log) => (
-                    <div key={log.id} className="log-row">
-                      <div className="log-content">
-                        {editingLogId === log.id ? (
-                          <textarea
-                            value={editingLogContent}
-                            onChange={(e) =>
-                              setEditingLogContent(e.target.value)
-                            }
-                            rows={2}
-                            autoFocus
-                          />
-                        ) : (
-                          <p>{log.content}</p>
-                        )}
-                        <small>
-                          {new Date(log.createdAt).toLocaleString()}
-                        </small>
-                      </div>
-                      <div className="log-actions">
-                        {editingLogId === log.id ? (
-                          <>
-                            <button
-                              onClick={() => handleUpdateLog(log.id)}
-                              className="btn-save"
-                            >
-                              Save
-                            </button>
-                            <button
-                              onClick={() => {
-                                setEditingLogId(null);
-                                setEditingLogContent("");
-                              }}
-                              className="btn-cancel"
-                            >
-                              Cancel
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button
-                              onClick={() => {
-                                setEditingLogId(log.id);
-                                setEditingLogContent(log.content);
-                              }}
-                              className="btn-edit"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDeleteLog(log.id)}
-                              className="btn-delete"
-                            >
-                              Delete
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
-          </>
+          </div>
         )}
-      </section>
-
-      {/* PASSWORD CONFIRMATION MODAL */}
-      {showPasswordModal && (
-        <div
-          className="modal-overlay"
-          onClick={() => {
-            setShowPasswordModal(false);
-            setPassword("");
-            setPasswordError("");
-          }}
-        >
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Confirm Changes</h2>
-            <p className="modal-info">
-              Enter your password to confirm changes to{" "}
-              <strong>{selectedProject?.title}</strong>
-            </p>
-            <form onSubmit={handleConfirmSave}>
-              <div className="form-group">
-                <label htmlFor="password">Password</label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password..."
-                  required
-                />
-              </div>
-
-              {passwordError && (
-                <div className="error-message">{passwordError}</div>
-              )}
-
-              <div className="modal-actions">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowPasswordModal(false);
-                    setPassword("");
-                    setPasswordError("");
-                  }}
-                >
-                  Cancel
-                </button>
-                <button type="submit">Confirm</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* DELETE PROJECT CONFIRMATION MODAL */}
-      {showDeleteModal && selectedProject && (
-        <div
-          className="modal-overlay"
-          onClick={() => {
-            setShowDeleteModal(false);
-            setDeletePassword("");
-            setPasswordError("");
-          }}
-        >
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Delete Project</h2>
-            <p className="modal-info modal-warning">
-              You are about to permanently delete{" "}
-              <strong>{selectedProject.title}</strong>. This will also delete
-              all logs and rewards associated with this project. This action
-              cannot be undone.
-            </p>
-            <form onSubmit={handleConfirmDelete}>
-              <div className="form-group">
-                <label htmlFor="delete-password">Password</label>
-                <input
-                  id="delete-password"
-                  type="password"
-                  value={deletePassword}
-                  onChange={(e) => setDeletePassword(e.target.value)}
-                  placeholder="Enter your password to confirm..."
-                  required
-                />
-              </div>
-
-              {passwordError && (
-                <div className="error-message">{passwordError}</div>
-              )}
-
-              <div className="modal-actions">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowDeleteModal(false);
-                    setDeletePassword("");
-                    setPasswordError("");
-                  }}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="btn-danger-action">
-                  Delete Project
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+      </div>
     </>
   );
 }

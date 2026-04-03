@@ -2,18 +2,34 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 type Variant = "landing" | "login" | "register";
 
 export default function PublicTopBar({ variant }: { variant: Variant }) {
+  const [hideTopbar, setHideTopbar] = useState(false);
+
+  useEffect(() => {
+    let lastScrollY = 0;
+
+    const handler = () => {
+      const currentScrollY = window.scrollY;
+      setHideTopbar(currentScrollY > lastScrollY);
+      lastScrollY = currentScrollY;
+    };
+    window.addEventListener("scroll", handler);
+
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
+
   return (
-    <header className="pub-topbar">
+    <header className={`pub-topbar ${hideTopbar ? "hidden" : ""}`}>
       <Link href="/" className="pub-topbar__brand">
         <Image
           src="/project-board-logo.png"
           alt="Project Board Logo"
-          width={32}
-          height={32}
+          width={24}
+          height={24}
         />
         <span className="pub-topbar__name">Project Board</span>
       </Link>
@@ -22,10 +38,10 @@ export default function PublicTopBar({ variant }: { variant: Variant }) {
         {variant === "landing" && (
           <>
             <Link href="/login" className="pub-topbar__link">
-              Log in
+              Sign in
             </Link>
             <Link href="/register" className="pub-topbar__cta">
-              Get started
+              Get Started
             </Link>
           </>
         )}

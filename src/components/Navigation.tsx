@@ -63,7 +63,6 @@ export default function Navigation() {
 
   return (
     <>
-      {/* Hamburger Button - Mobile Only */}
       <button
         className={`hamburger ${isOpen ? "open" : ""}`}
         onClick={() => setIsOpen(!isOpen)}
@@ -74,10 +73,8 @@ export default function Navigation() {
         <span></span>
       </button>
 
-      {/* Overlay - Mobile Only */}
       {isOpen && <div className="nav-overlay" onClick={closeMenu}></div>}
 
-      {/* Navigation */}
       <nav className={`navigation ${isOpen ? "open" : ""}`}>
         <Link
           href="/dashboard/tasks"
@@ -120,8 +117,6 @@ export default function Navigation() {
         </div>
 
         <div className="navigation-footer">
-          {/* Theme Toggle */}
-          {/* Theme Toggle Buttons */}
           <div className="theme-buttons">
             <button
               className={`theme-button ${theme === "light" ? "active" : ""}`}
@@ -139,7 +134,6 @@ export default function Navigation() {
             </button>
           </div>
 
-          {/* Logout Button */}
           <button onClick={handleLogout} className="logout-button">
             Logout
           </button>
