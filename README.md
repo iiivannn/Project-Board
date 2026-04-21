@@ -9,7 +9,6 @@ A modern, full-stack project management application with drag-and-drop functiona
 - 🛠️ [Tech Stack](#️-tech-stack) - View tools used in the project
 - 🎨 [Design Features](#-design-features) - UI/UX principles applied
 - 🔒 [Security Features](#-security-features) - Data security using backend
-- 📖 [Installation](#-installation) - Run locally
 
 ## ✨ Features
 
@@ -122,59 +121,11 @@ A modern, full-stack project management application with drag-and-drop functiona
   - Deleting projects
   - Changing username/password
 - **SQL Injection Protection:** Prisma ORM with parameterized queries
-- **XSS Protection:** React's built-in escaping
-
-<br/>
-
-## 📖 Installation
-
-1. **Clone the repository**
-
-```bash
-   git clone https://github.com/iiivannn/Project-Board.git
-   cd Project-Board
-```
-
-2. **Install dependencies**
-
-```bash
-   npm install
-```
-
-3. **Set up environment variables**
-
-   Create a `.env` file in the root directory:  
-   **Note**: Never commit `.env` file
-
-```env
-   DATABASE_URL="postgresql://username:password@localhost:5432/projectboard"
-   NEXTAUTH_URL="http://localhost:3000"
-   NEXTAUTH_SECRET="your-secret-key-here"
-```
-
-> 💡 Generate a secret with: `openssl rand -base64 32`
-
-4. **Set up the database**
-
-```bash
-   npx prisma generate
-   npx prisma migrate dev
-```
-
-5. **Start the development server**
-
-```bash
-   npm run dev
-```
-
-6. **Open your browser**
-
-   Navigate to [http://localhost:3000](http://localhost:3000)
 
 <br/>
 
 <div align="center">
 
-**Made with ❤️ and ☕ :)**
+**Made while caffeinated ☕**
 
 </div>
